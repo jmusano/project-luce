@@ -3,6 +3,7 @@ import { createWebSpeechStt } from '../lib/stt';
 import { createWebSpeechTts } from '../lib/tts';
 import { isHangupPhrase, nextTurn, type Topic } from '../lib/mind';
 import type { PictureChoice } from '../lib/allergyFilter';
+import { acquireScreenWakeLock, type WakeLockHandle } from '../lib/wakeLock';
 
 export type UiStatus = 'tap' | 'listening' | 'talking' | 'unsupported';
 
@@ -20,6 +21,7 @@ export function useConversationSession() {
   const quietTimerRef = useRef<number | null>(null);
   const listenTimerRef = useRef<number | null>(null);
   const interimRef = useRef('');
+  const wakeLockRef = useRef<WakeLockHandle | null>(null);
 
   const [status, setStatus] = useState<UiStatus>('tap');
   const [naomiCaption, setNaomiCaption] = useState('');
@@ -41,12 +43,19 @@ export function useConversationSession() {
     }
   };
 
+  const releaseWakeLock = () => {
+    const handle = wakeLockRef.current;
+    wakeLockRef.current = null;
+    if (handle) void handle.release();
+  };
+
   const hangUp = useCallback(() => {
     sessionActiveRef.current = false;
     setSessionActive(false);
     speakingRef.current = false;
     clearQuietTimer();
     clearListenTimer();
+    releaseWakeLock();
     sttRef.current.abort();
     ttsRef.current.cancel();
     setStatus('tap');
@@ -200,6 +209,16 @@ export function useConversationSession() {
     ttsRef.current.cancel();
     sttRef.current.abort();
 
+    // Keep iPad awake for the sitting; no-op if unsupported
+    releaseWakeLock();
+    void acquireScreenWakeLock(() => sessionActiveRef.current).then((handle) => {
+      if (!sessionActiveRef.current) {
+        void handle.release();
+        return;
+      }
+      wakeLockRef.current = handle;
+    });
+
     const turn = nextTurn({ turnIndex: 0, greeted: false, topic: null });
     if (turn.topic !== undefined) topicRef.current = turn.topic ?? null;
     greetedRef.current = true;
@@ -247,6 +266,7 @@ export function useConversationSession() {
     return () => {
       clearQuietTimer();
       clearListenTimer();
+      releaseWakeLock();
       sttRef.current.abort();
       ttsRef.current.cancel();
     };

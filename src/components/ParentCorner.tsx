@@ -10,9 +10,25 @@ type Props = {
 
 const LONG_PRESS_MS = 650;
 
+function statusLabel(status: string, sessionActive: boolean): string {
+  if (!sessionActive && status === 'tap') return 'Idle — tap Luce to start';
+  switch (status) {
+    case 'listening':
+      return 'Listening to Naomi';
+    case 'talking':
+      return 'Luce is talking';
+    case 'unsupported':
+      return 'Mic unavailable — use pictures';
+    case 'tap':
+      return sessionActive ? 'Ready' : 'Idle — tap Luce to start';
+    default:
+      return status;
+  }
+}
+
 /**
  * Hidden parent corner: long-press tiny mark.
- * Visual + captions + vibrate — NEVER sound. Both parents Deaf.
+ * Visual + large captions + vibrate — NEVER sound. Both parents Deaf.
  */
 export function ParentCorner({
   naomiCaption,
@@ -26,9 +42,9 @@ export function ParentCorner({
 
   const vibrateSoft = () => {
     try {
-      if (navigator.vibrate) navigator.vibrate(30);
+      if (navigator.vibrate) navigator.vibrate([40, 30, 40]);
     } catch {
-      /* ignore */
+      /* ignore — visual-only is enough */
     }
   };
 
@@ -68,6 +84,8 @@ export function ParentCorner({
     );
   }
 
+  const label = statusLabel(status, sessionActive);
+
   return (
     <div className="parent-panel" role="dialog" aria-label="Parent corner">
       <div className="parent-panel-inner">
@@ -78,38 +96,38 @@ export function ParentCorner({
           </button>
         </header>
         <p className="parent-note">
-          Visual only — no sound. Captions follow Naomi and Luce.
+          Visual only — no sound. Large captions follow Naomi and Luce.
         </p>
-        <dl className="parent-meta">
-          <div>
-            <dt>Status</dt>
-            <dd>{status}</dd>
-          </div>
-          <div>
-            <dt>Session</dt>
-            <dd>{sessionActive ? 'active' : 'idle'}</dd>
-          </div>
-        </dl>
-        <div className="parent-captions">
-          <p>
-            <strong>Naomi:</strong> {naomiCaption || '—'}
-          </p>
-          <p>
-            <strong>Luce:</strong> {luceCaption || '—'}
+        <div className="parent-status-block" role="status" aria-live="polite">
+          <span className="parent-status-label">Status</span>
+          <p className="parent-status-value">{label}</p>
+          <p className="parent-session-flag">
+            Session: <strong>{sessionActive ? 'ACTIVE' : 'idle'}</strong>
           </p>
         </div>
-        {sessionActive && (
-          <button
-            type="button"
-            className="parent-hangup"
-            onClick={() => {
-              onHangUp();
-              vibrateSoft();
-            }}
-          >
-            End session
-          </button>
-        )}
+        <div className="parent-captions" aria-live="polite">
+          <p className="parent-caption-line">
+            <span className="parent-who">Naomi</span>
+            <span className="parent-caption-text">{naomiCaption || '—'}</span>
+          </p>
+          <p className="parent-caption-line">
+            <span className="parent-who">Luce</span>
+            <span className="parent-caption-text">{luceCaption || '—'}</span>
+          </p>
+        </div>
+        <button
+          type="button"
+          className="parent-hangup"
+          disabled={!sessionActive}
+          onClick={() => {
+            if (!sessionActive) return;
+            onHangUp();
+            vibrateSoft();
+            setOpen(false);
+          }}
+        >
+          Hang up — end session
+        </button>
       </div>
     </div>
   );

@@ -18,7 +18,8 @@ Treat this package as a self-contained Vite + React + TypeScript web foundation 
 - **Captions** — Naomi + Luce every turn (Deaf parents follow on screen).
 - **Pictures** — always exactly two huge choices after Luce speaks; tap and/or talk.
 - **Allergy** — local tree-nut food filter; never show nuts as food; occasional teach line.
-- **Parent corner** — tiny mark, long-press; visual + captions + vibrate; no sound.
+- **Parent corner** — tiny mark, long-press; large visual captions/status + vibrate; clear hang-up; no sound.
+- **Wake lock** — Screen Wake Lock while session active (release on hang-up); graceful no-op if unsupported (keeps iPad awake).
 - **No** kid Help button, typing field, grades, Expo/Mini/ElevenLabs in this web slice.
 
 ## Stack
