@@ -9,6 +9,13 @@ type Props = {
   onChoose: (choice: PictureChoice) => void;
 };
 
+/** Keep picture labels short enough for huge 3yo buttons on iPad. */
+export function shortPictureLabel(label: string, max = 14): string {
+  const t = label.trim();
+  if (t.length <= max) return t;
+  return `${t.slice(0, Math.max(1, max - 1)).trimEnd()}…`;
+}
+
 /**
  * Exactly two huge picture choices — sized for 3yo fingers / iPad landscape.
  * Defense-in-depth: always allergyFilter labels/emoji before show so nut food
@@ -31,21 +38,24 @@ export function PictureChoices({ choices, disabled, onChoose }: Props) {
 
   return (
     <div className="picture-choices" role="group" aria-label="Picture choices">
-      {two.map((c) => (
-        <button
-          key={c.id}
-          type="button"
-          className="picture-choice"
-          disabled={disabled}
-          aria-label={c.label}
-          onClick={() => onChoose(c)}
-        >
-          <span className="picture-emoji" aria-hidden="true">
-            {c.emoji}
-          </span>
-          <span className="picture-label">{c.label}</span>
-        </button>
-      ))}
+      {two.map((c) => {
+        const label = shortPictureLabel(c.label);
+        return (
+          <button
+            key={c.id}
+            type="button"
+            className="picture-choice"
+            disabled={disabled}
+            aria-label={c.label}
+            onClick={() => onChoose(c)}
+          >
+            <span className="picture-emoji" aria-hidden="true">
+              {c.emoji}
+            </span>
+            <span className="picture-label">{label}</span>
+          </button>
+        );
+      })}
     </div>
   );
 }

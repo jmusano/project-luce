@@ -1,7 +1,7 @@
 /**
- * Lightweight preschool mind — soft teacher voice, short beats, topic branches.
+ * Lightweight preschool mind — warm teacher voice, short beats, topic branches.
  * Greeting offers talk OR two pictures; ~8 min arc ends with one first-principles
- * question (why/how/what if), never a quiz grade. Always exactly two picture choices.
+ * wonder (why/how/what if variants), never a quiz grade. Always exactly two pictures.
  * Topics span stories / nature / feelings / animals (plus dinos).
  * Allergy filter wraps food labels before anything leaves this module.
  */
@@ -52,7 +52,7 @@ type Beat = {
 /** Default greeting pictures: dinosaurs / forest-or-folklore. Talk unlocks animals, nature, feelings, stories. */
 const GREETING: Beat = {
   speech:
-    "Hi Naomi! I'm Luce. I'm so happy to play with you. Want dinosaurs, or a cozy forest story? You can tap a picture or just tell me — animals, nature, or feelings work too.",
+    "Hi Naomi! I'm Luce — come sit with me. I'm so glad you're here. Want dinosaurs, or a cozy forest story? You can tap a picture, or tell me animals, nature, or feelings. Whatever feels nice.",
   choices: [
     { id: 'dinos', emoji: '🦖', label: 'dinosaurs' },
     { id: 'forest', emoji: '🌲', label: 'forest story' },
@@ -62,7 +62,7 @@ const GREETING: Beat = {
 const DINO_BEATS: Beat[] = [
   {
     speech:
-      'Ooh, dinosaurs! Let\'s tiptoe with a gentle triceratops. She likes sunny rocks. Should we count three rocks, or say hi to a stegosaurus?',
+      "Ooh, dinosaurs — let's go soft and slow. A gentle triceratops loves sunny rocks. Want to count three warm rocks with me, or say a soft hi to a stegosaurus?",
     choices: [
       { id: 'rocks', emoji: '🪨', label: 'count rocks' },
       { id: 'stego', emoji: '🦕', label: 'stegosaurus' },
@@ -70,7 +70,7 @@ const DINO_BEATS: Beat[] = [
   },
   {
     speech:
-      'Stomp-stomp — a friendly brachiosaurus stretches up to the leaves. Soft neck, soft feet. Want to munch pretend leaves, or roar like a T-rex?',
+      "Stomp-stomp, so gentle — a friendly brachiosaurus stretches up to the leaves. Soft neck, soft feet. Shall we munch pretend leaves together, or try a tiny T-rex roar?",
     choices: [
       { id: 'leaves', emoji: '🍃', label: 'leaves' },
       { id: 'trex', emoji: '🦖', label: 'T-rex' },
@@ -78,7 +78,7 @@ const DINO_BEATS: Beat[] = [
   },
   {
     speech:
-      'A little velociraptor practices careful feet in the tall grass. One, two, three. Shall we count eggs, or splash in a warm puddle?',
+      "Look — a little velociraptor practices careful feet in the tall grass. One, two, three. Come count eggs with me, or splash in a warm puddle?",
     choices: [
       { id: 'eggs', emoji: '🥚', label: 'count eggs' },
       { id: 'puddle', emoji: '💧', label: 'puddle' },
@@ -86,7 +86,7 @@ const DINO_BEATS: Beat[] = [
   },
   {
     speech:
-      'We found a triceratops and a stegosaurus sharing shade. No scares — just friends. Peek at the moon with them, or follow a brachiosaurus path?',
+      "Oh sweet — a triceratops and a stegosaurus share the shade. No scares, just friends. Peek at the moon with them, or follow a brachiosaurus path?",
     choices: [
       { id: 'moon', emoji: '🌙', label: 'moon' },
       { id: 'path', emoji: '🛤️', label: 'dino path' },
@@ -94,7 +94,7 @@ const DINO_BEATS: Beat[] = [
   },
   {
     speech:
-      'T-rex is practicing a tiny happy roar — not too loud. Velociraptor claps her feet. Want a tiny roar together, or a quiet stretch?',
+      "T-rex practices a tiny happy roar — not too loud. Velociraptor claps her careful feet. Want a tiny roar together, or a quiet stretch beside me?",
     choices: [
       { id: 'roar', emoji: '📣', label: 'tiny roar' },
       { id: 'stretch', emoji: '🧘', label: 'stretch' },
@@ -106,7 +106,7 @@ const DINO_BEATS: Beat[] = [
 const FOREST_BEATS: Beat[] = [
   {
     speech:
-      'Into the cozy forest we go. Soft moss under our toes. Shall we follow a tiny friendly light, or listen for birds?',
+      "Come with me into the cozy forest. Soft moss under our toes — shh, it's friendly here. Shall we follow a tiny sparkle light, or listen for gentle birds?",
     choices: [
       { id: 'light', emoji: '✨', label: 'sparkle' },
       { id: 'birds', emoji: '🐦', label: 'birds' },
@@ -114,7 +114,7 @@ const FOREST_BEATS: Beat[] = [
   },
   {
     speech:
-      'On a soft Italian night, kind La Befana flies with care — never scary. She peeks at cozy windows. Follow her to the village, or wave to the stars?',
+      "On a soft Italian night, kind La Befana flies with care — never scary. She peeks at cozy windows. Want to follow her to the village, or wave to the stars with me?",
     choices: [
       { id: 'village', emoji: '🏘️', label: 'village' },
       { id: 'stars', emoji: '⭐', label: 'stars' },
@@ -122,7 +122,7 @@ const FOREST_BEATS: Beat[] = [
   },
   {
     speech:
-      'An Irish hillside holds green moss and a gentle creek — never spooky. The little light dances. Splash in the creek, or rest on the moss?',
+      "An Irish hillside holds green moss and a gentle creek — never spooky. The little light dances hello. Splash in the creek together, or rest on the soft moss?",
     choices: [
       { id: 'creek', emoji: '💧', label: 'creek' },
       { id: 'moss', emoji: '🌿', label: 'moss' },
@@ -130,7 +130,7 @@ const FOREST_BEATS: Beat[] = [
   },
   {
     speech:
-      'La Befana leaves a warm smile, and the Irish light blinks hello. We can gather soft flowers, or tell the trees good night.',
+      "La Befana leaves a warm smile, and the Irish light blinks hello to you. We can gather soft flowers, or tell the trees a sweet good night.",
     choices: [
       { id: 'flowers', emoji: '🌸', label: 'flowers' },
       { id: 'trees', emoji: '🌳', label: 'trees' },
@@ -138,7 +138,7 @@ const FOREST_BEATS: Beat[] = [
   },
   {
     speech:
-      'Story time hush: we made a tiny folklore nest of kindness. Hold a story hug, or blow a quiet wind kiss?',
+      "Story time hush — we made a tiny folklore nest of kindness. Hold a story hug with me, or blow a quiet wind kiss?",
     choices: [
       { id: 'hug', emoji: '🤗', label: 'story hug' },
       { id: 'wind', emoji: '🌬️', label: 'wind kiss' },
@@ -149,7 +149,7 @@ const FOREST_BEATS: Beat[] = [
 const FEELINGS_BEATS: Beat[] = [
   {
     speech:
-      'Feelings time. Sometimes our hearts feel big and sunny. Is your heart feeling happy, or a little quiet today?',
+      "Feelings time — I'm right here with you. Sometimes our hearts feel big and sunny. Is your heart feeling happy, or a little quiet today?",
     choices: [
       { id: 'happy', emoji: '☀️', label: 'happy' },
       { id: 'quiet', emoji: '🌙', label: 'quiet' },
@@ -157,7 +157,7 @@ const FEELINGS_BEATS: Beat[] = [
   },
   {
     speech:
-      'When we feel wiggly, a soft stretch helps. Want to stretch tall like a tree, or curl small like a seed?',
+      "When we feel wiggly, a soft stretch helps so much. Want to stretch tall like a tree with me, or curl small like a seed?",
     choices: [
       { id: 'tall', emoji: '🌲', label: 'tall' },
       { id: 'seed', emoji: '🌱', label: 'small' },
@@ -165,7 +165,7 @@ const FEELINGS_BEATS: Beat[] = [
   },
   {
     speech:
-      'Mommy and Daddy love your feelings. We can send them a heart, or a gentle wave.',
+      "Mommy and Daddy love every feeling you have. We can send them a warm heart, or a gentle wave — you choose.",
     choices: [
       { id: 'heart', emoji: '💛', label: 'heart' },
       { id: 'wave', emoji: '👋', label: 'wave' },
@@ -173,7 +173,7 @@ const FEELINGS_BEATS: Beat[] = [
   },
   {
     speech:
-      'Brave and kind can sit together. Shall we practice a brave breath, or a kind smile?',
+      "Brave and kind can sit side by side. Shall we practice a brave breath together, or share a kind smile?",
     choices: [
       { id: 'breath', emoji: '😮‍💨', label: 'breath' },
       { id: 'smile', emoji: '😊', label: 'smile' },
@@ -181,7 +181,7 @@ const FEELINGS_BEATS: Beat[] = [
   },
   {
     speech:
-      'Our feelings nest is cozy. Hold a soft hug for yourself, or share a hug with Mommy or Daddy later?',
+      "Our feelings nest is so cozy. Hold a soft hug for yourself, or save a hug for Mommy or Daddy later?",
     choices: [
       { id: 'self-hug', emoji: '🤗', label: 'soft hug' },
       { id: 'share-hug', emoji: '👪', label: 'share hug' },
@@ -193,7 +193,7 @@ const FEELINGS_BEATS: Beat[] = [
 const ANIMALS_BEATS: Beat[] = [
   {
     speech:
-      'Animal friends! A soft bunny wiggles her nose. Shall we hop with the bunny, or pat a gentle puppy?',
+      "Animal friends — oh, look! A soft bunny wiggles her nose just for you. Shall we hop with the bunny, or pat a gentle puppy?",
     choices: [
       { id: 'bunny', emoji: '🐰', label: 'bunny' },
       { id: 'puppy', emoji: '🐶', label: 'puppy' },
@@ -201,7 +201,7 @@ const ANIMALS_BEATS: Beat[] = [
   },
   {
     speech:
-      'A kitty purrs on a sunny sill, and a pony waits in the meadow. Want kitty cuddles, or a pony ride?',
+      "A kitty purrs on a sunny sill, and a pony waits in the meadow. Want cozy kitty cuddles, or a soft pony ride with me?",
     choices: [
       { id: 'kitty', emoji: '🐱', label: 'kitty' },
       { id: 'pony', emoji: '🐴', label: 'pony' },
@@ -209,7 +209,7 @@ const ANIMALS_BEATS: Beat[] = [
   },
   {
     speech:
-      'Birds chirp hello, and fish make little splash circles. Shall we chirp with the birds, or splash with the fish?',
+      "Birds chirp a little hello, and fish make tiny splash circles. Shall we chirp with the birds, or splash with the fish?",
     choices: [
       { id: 'chirp', emoji: '🐦', label: 'birds' },
       { id: 'splash-fish', emoji: '🐟', label: 'fish' },
@@ -217,7 +217,7 @@ const ANIMALS_BEATS: Beat[] = [
   },
   {
     speech:
-      'A ladybug lands on our finger, and a butterfly floats by. Count ladybug spots, or dance with the butterfly?',
+      "A ladybug lands on our finger — so careful — and a butterfly floats by. Count ladybug spots with me, or dance with the butterfly?",
     choices: [
       { id: 'ladybug', emoji: '🐞', label: 'ladybug' },
       { id: 'butterfly', emoji: '🦋', label: 'butterfly' },
@@ -225,7 +225,7 @@ const ANIMALS_BEATS: Beat[] = [
   },
   {
     speech:
-      'Night hush: a sleepy owl blinks, and a whale sings under soft waves. Owl hoot, or whale song?',
+      "Night hush, sweetheart: a sleepy owl blinks, and a whale sings under soft waves. Owl hoot, or whale song?",
     choices: [
       { id: 'owl', emoji: '🦉', label: 'owl' },
       { id: 'whale', emoji: '🐋', label: 'whale' },
@@ -237,7 +237,7 @@ const ANIMALS_BEATS: Beat[] = [
 const NATURE_BEATS: Beat[] = [
   {
     speech:
-      'Nature walk! The sky feels big today. Shall we warm up in the sun, or dance in soft rain?',
+      "Nature walk — take my hand. The sky feels so big and friendly today. Shall we warm up in the sun, or dance in soft rain?",
     choices: [
       { id: 'sun', emoji: '☀️', label: 'sun' },
       { id: 'rain', emoji: '🌧️', label: 'rain' },
@@ -245,7 +245,7 @@ const NATURE_BEATS: Beat[] = [
   },
   {
     speech:
-      'A cloud floats like a pillow, and flowers open their faces. Cloud hug, or smell the flowers?',
+      "A cloud floats like a soft pillow, and flowers open their little faces. Cloud hug with me, or smell the flowers?",
     choices: [
       { id: 'cloud', emoji: '☁️', label: 'cloud' },
       { id: 'bloom', emoji: '🌼', label: 'flower' },
@@ -253,7 +253,7 @@ const NATURE_BEATS: Beat[] = [
   },
   {
     speech:
-      'A little river sings over rocks, and a green hill waits for climbing. Splash in the river, or climb the hill?',
+      "A little river sings over rocks, and a green hill waits for climbing. Splash in the river together, or climb the hill?",
     choices: [
       { id: 'river', emoji: '🏞️', label: 'river' },
       { id: 'hill', emoji: '⛰️', label: 'hill' },
@@ -261,7 +261,7 @@ const NATURE_BEATS: Beat[] = [
   },
   {
     speech:
-      'Wind tickles our cheeks, and a rainbow paints the sky. Blow a wind kiss, or point at the rainbow?',
+      "Wind tickles our cheeks — hee — and a rainbow paints the sky. Blow a wind kiss, or point at the rainbow with me?",
     choices: [
       { id: 'breeze', emoji: '🌬️', label: 'wind' },
       { id: 'rainbow', emoji: '🌈', label: 'rainbow' },
@@ -269,7 +269,7 @@ const NATURE_BEATS: Beat[] = [
   },
   {
     speech:
-      'We gather one soft leaf and one bright star wish. Hold a leaf, or make a star wish?',
+      "We gather one soft leaf and one bright star wish. Hold a leaf close, or make a quiet star wish?",
     choices: [
       { id: 'leaf', emoji: '🍃', label: 'leaf' },
       { id: 'wish-star', emoji: '⭐', label: 'star' },
@@ -277,57 +277,113 @@ const NATURE_BEATS: Beat[] = [
   },
 ];
 
-const FIRST_PRINCIPLES: Record<Topic, Beat> = {
-  dinos: {
-    speech:
-      'Wonder time — just curious. What if a T-rex and a triceratops both wanted the same sunny rock? Why might sharing feel better than grabbing, and how could they take turns kindly?',
-    choices: [
-      { id: 'take-turns', emoji: '🔄', label: 'take turns' },
-      { id: 'sit-together', emoji: '🤝', label: 'sit together' },
-    ],
-    firstPrinciples: true,
-  },
-  forest: {
-    speech:
-      'Wonder time — just curious. Why do you think La Befana and the Irish light both love cozy homes? What if kindness is what makes a home feel warm — how would you show it?',
-    choices: [
-      { id: 'warmth', emoji: '🏠', label: 'warmth' },
-      { id: 'love', emoji: '💛', label: 'love' },
-    ],
-    firstPrinciples: true,
-  },
-  feelings: {
-    speech:
-      'Wonder time — just curious. How do you know when your heart needs a hug? What if your tummy, tears, or smile are messengers — why might your body tell you first?',
-    choices: [
-      { id: 'tummy', emoji: '🫧', label: 'tummy' },
-      { id: 'tears-smile', emoji: '💧', label: 'tears or smile' },
-    ],
-    firstPrinciples: true,
-  },
-  animals: {
-    speech:
-      'Wonder time — just curious. What if the bunny and the puppy both wanted the same soft blanket? Why is sharing hard sometimes, and how could friends still be gentle?',
-    choices: [
-      { id: 'share-blanket', emoji: '🫂', label: 'share' },
-      { id: 'take-turns-blanket', emoji: '🔄', label: 'turns' },
-    ],
-    firstPrinciples: true,
-  },
-  nature: {
-    speech:
-      'Wonder time — let\'s think. Why do you think rain helps flowers grow? What if water is a drink for living things — how does the sun help after the rain?',
-    choices: [
-      { id: 'drink', emoji: '💧', label: 'drink' },
-      { id: 'grow', emoji: '🌱', label: 'grow' },
-    ],
-    firstPrinciples: true,
-  },
+/** Two+ wonder angles per topic — one picked per sitting (never a quiz). */
+const FIRST_PRINCIPLES: Record<Topic, Beat[]> = {
+  dinos: [
+    {
+      speech:
+        "Wonder time with me — just curious, no right answer. What if a T-rex and a triceratops both wanted the same sunny rock? Why might sharing feel better than grabbing, and how could they take turns kindly?",
+      choices: [
+        { id: 'take-turns', emoji: '🔄', label: 'take turns' },
+        { id: 'sit-together', emoji: '🤝', label: 'sit together' },
+      ],
+      firstPrinciples: true,
+    },
+    {
+      speech:
+        "Let's wonder together. How does a brachiosaurus know the high leaves are for stretching, not grabbing? What if being gentle with our long necks — and our friends — is the kindest way?",
+      choices: [
+        { id: 'gentle-neck', emoji: '🦕', label: 'gentle' },
+        { id: 'kind-reach', emoji: '🍃', label: 'kind reach' },
+      ],
+      firstPrinciples: true,
+    },
+  ],
+  forest: [
+    {
+      speech:
+        "Wonder time — just curious. Why do you think La Befana and the Irish light both love cozy homes? What if kindness is what makes a home feel warm — how would you show it?",
+      choices: [
+        { id: 'warmth', emoji: '🏠', label: 'warmth' },
+        { id: 'love', emoji: '💛', label: 'love' },
+      ],
+      firstPrinciples: true,
+    },
+    {
+      speech:
+        "Come wonder with me. What if the soft moss and the little creek are friends because they share the hillside? Why might sharing space feel peaceful, and how can we be gentle guests in a forest?",
+      choices: [
+        { id: 'share-space', emoji: '🌿', label: 'share' },
+        { id: 'gentle-guest', emoji: '🕊️', label: 'gentle' },
+      ],
+      firstPrinciples: true,
+    },
+  ],
+  feelings: [
+    {
+      speech:
+        "Wonder time — I'm curious with you. How do you know when your heart needs a hug? What if your tummy, tears, or smile are messengers — why might your body tell you first?",
+      choices: [
+        { id: 'tummy', emoji: '🫧', label: 'tummy' },
+        { id: 'tears-smile', emoji: '💧', label: 'tears/smile' },
+      ],
+      firstPrinciples: true,
+    },
+    {
+      speech:
+        "Let's wonder softly. What if a brave breath and a kind smile are tools in the same toolbox? Why might naming a feeling help it feel smaller, and how could we practice together?",
+      choices: [
+        { id: 'name-feel', emoji: '🗣️', label: 'name it' },
+        { id: 'breathe-feel', emoji: '😮‍💨', label: 'breathe' },
+      ],
+      firstPrinciples: true,
+    },
+  ],
+  animals: [
+    {
+      speech:
+        "Wonder time — just curious. What if the bunny and the puppy both wanted the same soft blanket? Why is sharing hard sometimes, and how could friends still be gentle?",
+      choices: [
+        { id: 'share-blanket', emoji: '🫂', label: 'share' },
+        { id: 'take-turns-blanket', emoji: '🔄', label: 'turns' },
+      ],
+      firstPrinciples: true,
+    },
+    {
+      speech:
+        "Come wonder with me. How does a whale know when to sing soft under the waves? What if animal friends listen with their whole bodies — why might quiet listening be a kind of love?",
+      choices: [
+        { id: 'listen-soft', emoji: '👂', label: 'listen' },
+        { id: 'sing-soft', emoji: '🎵', label: 'soft song' },
+      ],
+      firstPrinciples: true,
+    },
+  ],
+  nature: [
+    {
+      speech:
+        "Wonder time — let's think gently. Why do you think rain helps flowers grow? What if water is a drink for living things — how does the sun help after the rain?",
+      choices: [
+        { id: 'drink', emoji: '💧', label: 'drink' },
+        { id: 'grow', emoji: '🌱', label: 'grow' },
+      ],
+      firstPrinciples: true,
+    },
+    {
+      speech:
+        "Let's wonder under the big sky. What if wind and rainbows are nature's way of saying hello after a storm? Why might change feel okay when the sky still holds us, and how do we notice it?",
+      choices: [
+        { id: 'notice-sky', emoji: '🌤️', label: 'notice' },
+        { id: 'hello-sky', emoji: '🌈', label: 'hello' },
+      ],
+      firstPrinciples: true,
+    },
+  ],
 };
 
 const SNACK_BEAT: Beat = {
   speech:
-    'After play, we wash hands and ask Mommy or Daddy before any snack. Apples are a happy choice. Would you pick an apple, or a banana?',
+    "After play, we wash hands and ask Mommy or Daddy before any snack. Apples are a happy choice. Would you pick an apple with me, or a banana?",
   choices: [
     { id: 'apple', emoji: '🍎', label: 'apple' },
     { id: 'banana', emoji: '🍌', label: 'banana' },
@@ -337,7 +393,7 @@ const SNACK_BEAT: Beat = {
 
 const WIND_DOWN: Beat = {
   speech:
-    'What a lovely sitting. We can visit animal friends, or walk in nature again. What sounds nice?',
+    "What a lovely sitting — thank you for playing with me. We can visit animal friends, or walk in nature again. What sounds nice?",
   choices: [
     { id: 'animals', emoji: '🐰', label: 'animals' },
     { id: 'nature', emoji: '🌈', label: 'nature' },
@@ -346,7 +402,7 @@ const WIND_DOWN: Beat = {
 
 const FAREWELL: Beat = {
   speech:
-    'Bye-bye, Naomi. I loved our story time. Go give Mommy or Daddy a big hug. See you soon!',
+    "Bye-bye, Naomi. I loved our story time so much. Go give Mommy or Daddy a big warm hug. See you soon!",
   choices: [
     { id: 'hug', emoji: '🤗', label: 'hug' },
     { id: 'wave', emoji: '👋', label: 'wave' },
@@ -379,12 +435,30 @@ export function collectAllPicturePairs(): [PictureChoice, PictureChoice][] {
     ...FEELINGS_BEATS,
     ...ANIMALS_BEATS,
     ...NATURE_BEATS,
-    ...Object.values(FIRST_PRINCIPLES),
+    ...Object.values(FIRST_PRINCIPLES).flat(),
     SNACK_BEAT,
     WIND_DOWN,
     FAREWELL,
   ];
   return beats.map((b) => b.choices);
+}
+
+/** All first-principles wonder speeches (for variety tests — never grades). */
+export function firstPrinciplesSpeechCatalog(): string[] {
+  return Object.values(FIRST_PRINCIPLES)
+    .flat()
+    .map((b) => b.speech);
+}
+
+/** Deterministic pick so the same input yields the same wonder angle. */
+function pickFirstPrinciples(topic: Topic, input: MindInput): Beat {
+  const variants = FIRST_PRINCIPLES[topic];
+  const key = `${input.pictureId ?? ''}|${(input.naomiSaid ?? '').toLowerCase()}|${input.turnIndex}`;
+  let h = 0;
+  for (let i = 0; i < key.length; i++) {
+    h = (h + key.charCodeAt(i) * (i + 3)) % 10007;
+  }
+  return variants[h % variants.length];
 }
 
 /**
@@ -464,17 +538,17 @@ function celebrate(
   const said = naomiSaid?.trim() ?? '';
   const dinoMatch = said.match(DINO_NAME_RE);
   if (dinoMatch) {
-    return `Yes — ${dinoMatch[0]}! You remembered! `;
+    return `Yes — ${dinoMatch[0]}! You remembered — I'm so proud! `;
   }
   if (pictureId) {
-    if (topic === 'dinos') return 'You picked that — roar-some! ';
-    if (topic === 'feelings') return 'Thank you for sharing that. ';
-    if (topic === 'animals') return 'What a sweet animal friend! ';
-    if (topic === 'nature') return 'Nature is so lovely! ';
-    return 'You picked that — wonderful! ';
+    if (topic === 'dinos') return 'Oh yes — that one! Roar-some! ';
+    if (topic === 'feelings') return 'Thank you for sharing that with me. ';
+    if (topic === 'animals') return 'What a sweet animal friend — I love it! ';
+    if (topic === 'nature') return 'Nature is so lovely with you! ';
+    return 'You picked that — wonderful choice! ';
   }
   if (said) {
-    return 'I heard you. Thank you! ';
+    return 'I heard you. Thank you, sweetheart! ';
   }
   return '';
 }
@@ -514,7 +588,7 @@ export function nextTurn(input: MindInput): MindTurn {
   if (phase < beats.length) {
     beat = beats[phase];
   } else if (phase === beats.length) {
-    beat = FIRST_PRINCIPLES[topic];
+    beat = pickFirstPrinciples(topic, input);
   } else if (phase === beats.length + 1) {
     beat = SNACK_BEAT;
   } else {

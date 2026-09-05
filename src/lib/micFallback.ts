@@ -23,12 +23,12 @@ export function micModeFromStatus(status: UiStatus, sttSupported: boolean): MicM
 /** Kid-safe status line — never scary permission / error language. */
 export function kidSafeStatusText(status: UiStatus, sttSupported: boolean): string {
   if (status === 'talking') return 'Luce is talking';
-  if (status === 'listening') return 'Listening';
+  if (status === 'listening') return 'Your turn — listening';
 
   const mode = micModeFromStatus(status, sttSupported);
-  if (mode === 'unsupported') return 'Pictures work great — tap one!';
-  if (mode === 'denied') return 'Mic is resting — tap a picture!';
-  return 'Tap to talk';
+  if (mode === 'unsupported') return 'Pictures work — tap one!';
+  if (mode === 'denied') return 'Mic resting — tap a picture!';
+  return 'Tap Luce to talk';
 }
 
 /** Short visual parent note (captions only — never sound). */

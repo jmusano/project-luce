@@ -35,7 +35,7 @@ Treat this package as a self-contained Vite + React + TypeScript web foundation 
 ## Layout (top to bottom)
 
 1. Soft Luce face (talk control)
-2. Status line (Tap to talk / Listening / Luce is talking)
+2. Status line (Tap Luce to talk / Your turn — listening / Luce is talking)
 3. Dual captions
 4. Two huge picture choices
 5. Hidden parent mark (top-right)

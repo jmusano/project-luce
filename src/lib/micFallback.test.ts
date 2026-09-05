@@ -26,9 +26,9 @@ describe('classifySpeechError', () => {
 
 describe('kidSafeStatusText', () => {
   it('keeps clear listening / talking / tap states', () => {
-    expect(kidSafeStatusText('listening', true)).toBe('Listening');
+    expect(kidSafeStatusText('listening', true)).toBe('Your turn — listening');
     expect(kidSafeStatusText('talking', true)).toBe('Luce is talking');
-    expect(kidSafeStatusText('tap', true)).toBe('Tap to talk');
+    expect(kidSafeStatusText('tap', true)).toBe('Tap Luce to talk');
   });
 
   it('uses calm picture prompts for unsupported and denied', () => {

@@ -377,6 +377,14 @@ body {
   min-height: 1.5em;
   letter-spacing: 0.01em;
   flex-shrink: 0;
+  /* Soft pill so Tap / Listening / Talking stay readable on iPad */
+  display: inline-block;
+  max-width: min(92vw, 28rem);
+  padding: 0.28rem 0.9rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.72);
+  border: 2px solid rgba(61, 74, 63, 0.12);
+  box-shadow: 0 1px 4px rgba(61, 74, 63, 0.06);
 }
 
 /* —— Captions (Deaf-parent accessible: large, high contrast, clear who) —— */
@@ -523,7 +531,7 @@ body {
 }
 
 .picture-label {
-  font-size: clamp(1.25rem, 3vw, 1.75rem);
+  font-size: clamp(1.2rem, 2.8vw, 1.65rem);
   font-weight: 700;
   color: var(--ink);
   text-transform: lowercase;
@@ -532,6 +540,12 @@ body {
   line-height: 1.15;
   max-width: 100%;
   overflow-wrap: anywhere;
+  /* Prefer one short line on huge buttons */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  max-height: 2.4em;
 }
 
 /* —— Hidden parent corner —— */

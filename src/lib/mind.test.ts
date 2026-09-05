@@ -8,6 +8,7 @@ import {
 import {
   collectAllPicturePairs,
   detectTopic,
+  firstPrinciplesSpeechCatalog,
   isHangupPhrase,
   nextTurn,
   STORY_BEAT_COUNT,
@@ -65,17 +66,17 @@ describe('detectTopic', () => {
 describe('picture-choice variety catalog', () => {
   it('exposes many exactly-two pairs across dinos/forest/feelings/animals/nature', () => {
     const pairs = collectAllPicturePairs();
-    // greeting + 5 topics×5 beats + 5 first-principles + snack + wind-down + farewell
-    expect(pairs.length).toBeGreaterThanOrEqual(30);
+    // greeting + 5 topics×5 beats + ≥10 first-principles + snack + wind-down + farewell
+    expect(pairs.length).toBeGreaterThanOrEqual(35);
     for (const pair of pairs) {
       expect(pair).toHaveLength(2);
       expect(pair[0].emoji.length).toBeGreaterThan(0);
       expect(pair[1].emoji.length).toBeGreaterThan(0);
       // short ~3yo labels
       expect(pair[0].label.length).toBeGreaterThan(0);
-      expect(pair[0].label.length).toBeLessThanOrEqual(16);
+      expect(pair[0].label.length).toBeLessThanOrEqual(14);
       expect(pair[1].label.length).toBeGreaterThan(0);
-      expect(pair[1].label.length).toBeLessThanOrEqual(16);
+      expect(pair[1].label.length).toBeLessThanOrEqual(14);
     }
     const labels = pairs.flat().map((c) => c.label.toLowerCase());
     expect(labels).toEqual(expect.arrayContaining(['dinosaurs', 'bunny', 'puppy', 'sun', 'rainbow']));
@@ -215,10 +216,63 @@ describe('nextTurn', () => {
       const lower = turn.speech.toLowerCase();
       // At least one first-principles stem; wonder framing, never graded quiz language
       expect(lower).toMatch(/what if|why |how /);
-      expect(lower).toMatch(/wonder|curious|think|kind|share|grow|hug|home|friend|rain|water|heart|body/);
+      expect(lower).toMatch(/wonder|curious|think|kind|share|grow|hug|home|friend|rain|water|heart|body|listen|gentle|notice/);
       expect(lower).not.toMatch(/\bquiz\b|\bgrade\b|\bscore\b|correct answer|wrong answer|\bpoints\b/);
       expect(turn.twoPictureChoices).toHaveLength(2);
+      for (const c of turn.twoPictureChoices) {
+        expect(c.label.length).toBeGreaterThan(0);
+        expect(c.label.length).toBeLessThanOrEqual(14);
+      }
     }
+  });
+
+  it('offers multiple first-principles wonder angles per topic catalog', () => {
+    const catalog = firstPrinciplesSpeechCatalog();
+    // 5 topics × ≥2 variants
+    expect(catalog.length).toBeGreaterThanOrEqual(10);
+    const stems = catalog.filter((s) => /what if|why |how /i.test(s));
+    expect(stems.length).toBe(catalog.length);
+    for (const speech of catalog) {
+      expect(speech.toLowerCase()).not.toMatch(/\bquiz\b|\bgrade\b|\bscore\b|correct answer/);
+    }
+    // Distinct angles: more unique openings than topics alone
+    const unique = new Set(catalog.map((s) => s.slice(0, 48).toLowerCase()));
+    expect(unique.size).toBeGreaterThanOrEqual(8);
+  });
+
+  it('picks different first-principles variants from different kid replies', () => {
+    const fpIndex = STORY_BEAT_COUNT + 1;
+    const a = nextTurn({
+      turnIndex: fpIndex,
+      greeted: true,
+      topic: 'dinos',
+      naomiSaid: 'tiny roar',
+      pictureId: 'roar',
+    });
+    const b = nextTurn({
+      turnIndex: fpIndex,
+      greeted: true,
+      topic: 'dinos',
+      naomiSaid: 'quiet stretch please',
+      pictureId: 'stretch',
+    });
+    // Deterministic per input; different inputs should usually diverge across variants
+    const speeches = [a.speech, b.speech];
+    expect(speeches.every((s) => /what if|why |how /i.test(s))).toBe(true);
+    expect(a.twoPictureChoices).toHaveLength(2);
+    expect(b.twoPictureChoices).toHaveLength(2);
+  });
+
+  it('keeps warm preschool-teacher beats (co-play, soft invites)', () => {
+    const dino = nextTurn({
+      turnIndex: 1,
+      greeted: true,
+      pictureId: 'dinos',
+      naomiSaid: 'dinosaurs',
+    });
+    expect(dino.speech.toLowerCase()).toMatch(/soft|gentle|with me|together|come|oh |sweet/);
+    const greet = nextTurn({ turnIndex: 0, greeted: false });
+    expect(greet.speech.toLowerCase()).toMatch(/glad|sit with me|happy|here/);
   });
 
   it('hard-interrupts when Naomi mentions nut food (does not continue story beat)', () => {
