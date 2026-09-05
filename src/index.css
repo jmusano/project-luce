@@ -51,9 +51,9 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
-  gap: 0.4rem;
-  padding: 0.5rem max(1rem, env(safe-area-inset-right)) max(0.75rem, env(safe-area-inset-bottom))
-    max(1rem, env(safe-area-inset-left));
+  gap: 0.45rem;
+  /* Safe-area handled by .app-shell — avoid double inset gaps on iPad */
+  padding: 0.55rem 1rem 0.85rem;
   max-width: 1100px;
   width: 100%;
   margin: 0 auto;
@@ -118,6 +118,22 @@ body {
 
 .luce-face.is-tap .luce-face-svg {
   animation: face-breathe 2.8s ease-in-out infinite;
+}
+
+/* Calm idle blink while waiting for tap */
+.luce-face.is-tap .luce-lid {
+  transform-origin: center;
+  transform-box: fill-box;
+  opacity: 0;
+  animation: face-blink 4.6s ease-in-out infinite;
+}
+
+.luce-face.is-tap .luce-lid--right {
+  animation-delay: 0.04s;
+}
+
+.luce-face.is-tap .luce-eye-shine {
+  animation: face-blink-shine 4.6s ease-in-out infinite;
 }
 
 /* Listening — warm sage pulse rings + attentive lean */
@@ -213,6 +229,40 @@ body {
   }
 }
 
+/* Quick soft blink — mostly open, brief lid close */
+@keyframes face-blink {
+  0%,
+  88%,
+  100% {
+    opacity: 0;
+    transform: scaleY(0.15);
+  }
+  90%,
+  94% {
+    opacity: 1;
+    transform: scaleY(1);
+  }
+  96% {
+    opacity: 0;
+    transform: scaleY(0.15);
+  }
+}
+
+@keyframes face-blink-shine {
+  0%,
+  88%,
+  100% {
+    opacity: 0.85;
+  }
+  90%,
+  94% {
+    opacity: 0;
+  }
+  96% {
+    opacity: 0.85;
+  }
+}
+
 @keyframes face-listen-bob {
   0%,
   100% {
@@ -293,6 +343,8 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .luce-face.is-tap .luce-face-svg,
   .luce-face.is-tap .luce-face-glow,
+  .luce-face.is-tap .luce-lid,
+  .luce-face.is-tap .luce-eye-shine,
   .luce-face.is-listening .luce-face-svg,
   .luce-face.is-listening .luce-face-glow,
   .luce-face.is-talking .luce-face-svg,
@@ -302,6 +354,10 @@ body {
   .listen-ring--outer,
   .listen-ring--inner {
     animation: none;
+  }
+
+  .luce-face.is-tap .luce-lid {
+    opacity: 0;
   }
 
   .luce-face.is-listening .luce-face-svg {
@@ -323,28 +379,69 @@ body {
   flex-shrink: 0;
 }
 
-/* —— Captions —— */
+/* —— Captions (Deaf-parent accessible: large, high contrast, clear who) —— */
 .captions {
-  width: min(920px, 100%);
-  background: var(--card);
-  border: 2px solid var(--sage-soft);
+  width: min(960px, 100%);
+  background: #fff;
+  border: 3px solid var(--ink);
   border-radius: 1.25rem;
-  padding: 0.65rem 1rem;
+  padding: 0.7rem 0.85rem;
   box-shadow: 0 4px 14px var(--shadow);
   flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
 }
 
 .caption {
-  margin: 0.28rem 0;
-  font-size: clamp(1.1rem, 2.3vw, 1.3rem);
-  line-height: 1.35;
-  color: var(--ink);
-  font-weight: 500;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.2rem;
+  padding: 0.55rem 0.75rem;
+  border-radius: 0.85rem;
+  border: 2px solid transparent;
+  background: #f7f3ec;
+}
+
+.caption--naomi {
+  border-color: #c4785a;
+  background: #fff6f0;
+}
+
+.caption--luce {
+  border-color: var(--sage-deep);
+  background: #f0f7f0;
 }
 
 .caption .who {
-  color: var(--sage-deep);
+  display: inline-block;
+  font-size: clamp(0.95rem, 2.2vw, 1.1rem);
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 0.12rem 0.55rem;
+  border-radius: 999px;
+  line-height: 1.2;
+}
+
+.caption--naomi .who {
+  color: #fff;
+  background: #a85a3c;
+}
+
+.caption--luce .who {
+  color: #fff;
+  background: var(--sage-deep);
+}
+
+.caption-text {
+  font-size: clamp(1.3rem, 3.2vw, 1.65rem);
+  line-height: 1.35;
+  color: #1e261f;
   font-weight: 700;
+  overflow-wrap: anywhere;
 }
 
 /* —— Giant picture choices (dominate lower half) —— */
@@ -606,28 +703,52 @@ body {
 
 .parent-caption-line {
   margin: 0;
-  padding: 0.85rem 1rem;
+  padding: 0.9rem 1.05rem;
   background: #fff;
-  border: 2px solid var(--sage-soft);
+  border: 3px solid var(--sage-soft);
   border-radius: 1rem;
   display: flex;
   flex-direction: column;
-  gap: 0.35rem;
+  gap: 0.4rem;
+}
+
+.parent-caption-line--naomi {
+  border-color: #c4785a;
+  background: #fff6f0;
+}
+
+.parent-caption-line--luce {
+  border-color: var(--sage-deep);
+  background: #f0f7f0;
 }
 
 .parent-who {
+  display: inline-block;
+  align-self: flex-start;
   font-size: clamp(1rem, 2.4vw, 1.15rem);
-  font-weight: 700;
-  color: var(--sage-deep);
+  font-weight: 800;
+  color: #fff;
+  background: var(--sage-deep);
   text-transform: uppercase;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.05em;
+  padding: 0.15rem 0.6rem;
+  border-radius: 999px;
+}
+
+.parent-caption-line--naomi .parent-who {
+  background: #a85a3c;
+}
+
+.parent-caption-line--luce .parent-who {
+  background: var(--sage-deep);
 }
 
 .parent-caption-text {
-  font-size: clamp(1.35rem, 3.6vw, 1.7rem);
-  font-weight: 600;
+  /* Parent corner stays HUGE for Deaf parents */
+  font-size: clamp(1.55rem, 4.2vw, 2rem);
+  font-weight: 700;
   line-height: 1.3;
-  color: var(--ink);
+  color: #1e261f;
   overflow-wrap: anywhere;
 }
 
@@ -678,12 +799,16 @@ body {
   }
 
   .captions {
-    padding: 0.45rem 0.85rem;
+    padding: 0.5rem 0.7rem;
+    gap: 0.4rem;
   }
 
   .caption {
-    margin: 0.15rem 0;
-    font-size: clamp(1rem, 2.1vh, 1.2rem);
+    padding: 0.4rem 0.65rem;
+  }
+
+  .caption-text {
+    font-size: clamp(1.15rem, 2.8vh, 1.4rem);
   }
 
   .picture-choices {

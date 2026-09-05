@@ -19,6 +19,7 @@ export function LuceFace({ status, onTap }: Props) {
   const talking = mode === 'talking';
   const unsupported = mode === 'unsupported';
   const tap = mode === 'tap';
+  const idle = tap; // calm blink only while waiting for tap (not unsupported squint)
 
   const aria =
     tap
@@ -49,7 +50,7 @@ export function LuceFace({ status, onTap }: Props) {
           </radialGradient>
         </defs>
 
-        {/* soft outer aura rings — listening */}
+        {/* soft outer aura rings — listening only */}
         {listening && (
           <>
             <circle
@@ -115,14 +116,14 @@ export function LuceFace({ status, onTap }: Props) {
             />
           </>
         ) : (
-          <>
+          <g className="luce-eyes">
             <ellipse
               cx="72"
               cy="95"
               rx={listening ? 9 : 8}
               ry={talking ? 8.5 : listening ? 11 : 10}
               fill="#3d4a3f"
-              className="luce-eye"
+              className="luce-eye luce-eye--left"
             />
             <ellipse
               cx="128"
@@ -130,14 +131,35 @@ export function LuceFace({ status, onTap }: Props) {
               rx={listening ? 9 : 8}
               ry={talking ? 8.5 : listening ? 11 : 10}
               fill="#3d4a3f"
-              className="luce-eye"
+              className="luce-eye luce-eye--right"
             />
-            <circle cx="74" cy="92" r="2.5" fill="#fff" opacity="0.85" />
-            <circle cx="130" cy="92" r="2.5" fill="#fff" opacity="0.85" />
-          </>
+            <circle cx="74" cy="92" r="2.5" fill="#fff" opacity="0.85" className="luce-eye-shine" />
+            <circle cx="130" cy="92" r="2.5" fill="#fff" opacity="0.85" className="luce-eye-shine" />
+            {/* Calm idle blink lids — waiting / tap state only */}
+            {idle && (
+              <>
+                <ellipse
+                  cx="72"
+                  cy="95"
+                  rx="10"
+                  ry="11"
+                  fill="#f0c9a8"
+                  className="luce-lid luce-lid--left"
+                />
+                <ellipse
+                  cx="128"
+                  cy="95"
+                  rx="10"
+                  ry="11"
+                  fill="#f0c9a8"
+                  className="luce-lid luce-lid--right"
+                />
+              </>
+            )}
+          </g>
         )}
 
-        {/* smile / mouth */}
+        {/* smile / mouth — talking open oval vs listening soft smile vs idle gentle smile */}
         {talking ? (
           <ellipse
             cx="100"

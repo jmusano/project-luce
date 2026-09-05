@@ -158,11 +158,11 @@ export function ParentCorner({
           </p>
         </div>
         <div className="parent-captions" aria-live="polite">
-          <p className="parent-caption-line">
+          <p className="parent-caption-line parent-caption-line--naomi">
             <span className="parent-who">Naomi</span>
             <span className="parent-caption-text">{naomiCaption || '—'}</span>
           </p>
-          <p className="parent-caption-line">
+          <p className="parent-caption-line parent-caption-line--luce">
             <span className="parent-who">Luce</span>
             <span className="parent-caption-text">{luceCaption || '—'}</span>
           </p>
