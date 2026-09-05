@@ -120,6 +120,11 @@ describe('hard allergy interrupt', () => {
     );
     // "don't eat them" is the teach — allowed; food offering is not
     expect(turn.speech.toLowerCase()).toMatch(/sick|don't eat/);
+    // Product locks: parent gate + safe fruit redirect
+    expect(turn.speech.toLowerCase()).toMatch(/mommy or daddy/);
+    expect(turn.speech.toLowerCase()).toMatch(/apple/);
+    expect(turn.speech.toLowerCase()).toMatch(/banana/);
+    expect(turn.speech.toLowerCase()).toMatch(/never eat/);
     expect(turn.twoPictureChoices).toHaveLength(2);
     for (const c of turn.twoPictureChoices) {
       expect(containsTreeNutFood(c.label)).toBe(false);
@@ -127,6 +132,18 @@ describe('hard allergy interrupt', () => {
     }
     expect(turn.captions.naomi).toBe('peanut butter');
     expect(turn.captions.luce).toBe(turn.speech);
+  });
+
+  it('allergy interrupt speech stays warm preschool-teacher (not cold stop)', () => {
+    const turn = buildAllergyInterruptTurn('I want nuts');
+    const lower = turn.speech.toLowerCase();
+    // Warm co-play markers — not a sharp "whoa / stop" bark
+    expect(lower).toMatch(/oh |sweetheart|careful|with me|soft |let's/);
+    expect(lower).not.toMatch(/\bwhoa\b|\bstop\.?\b|\bhalt\b|\bno!\b/);
+    // Locks still held
+    expect(turn.speech).toContain(getAllergyTeachLine());
+    expect(lower).toMatch(/mommy or daddy/);
+    expect(turn.twoPictureChoices.map((c) => c.label)).toEqual(['apple', 'banana']);
   });
 });
 

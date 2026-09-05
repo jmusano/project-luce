@@ -47,7 +47,7 @@ export const TREE_NUT_FOOD_EMOJIS = ["🥜"] as const;
 const TEACH_LINE = "Nuts make Naomi sick — don't eat them.";
 
 const HARD_INTERRUPT_SPEECH =
-  "Whoa — stop. Nuts make Naomi sick — don't eat them. We never eat those. Ask Mommy or Daddy before any snack. Want an apple, or a banana?";
+  "Oh sweetheart — careful with me. Nuts make Naomi sick — don't eat them. We never eat those. Let's ask Mommy or Daddy before any snack. Want a soft apple with me, or a banana?";
 
 const SAFE_FALLBACK_A: PictureChoice = {
   id: "safe-apple",

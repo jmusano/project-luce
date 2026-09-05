@@ -284,6 +284,9 @@ describe('nextTurn', () => {
     });
     expect(turn.speech).toContain(getAllergyTeachLine());
     expect(turn.speech.toLowerCase()).toMatch(/sick|don't eat/);
+    // Warm interrupt — soft co-play voice, not a cold bark
+    expect(turn.speech.toLowerCase()).toMatch(/oh |sweetheart|careful|with me|soft |let's/);
+    expect(turn.speech.toLowerCase()).not.toMatch(/\bwhoa\b|\bstop\.?\b/);
     // Must not slip into the normal dino celebration / next beat
     expect(turn.speech.toLowerCase()).not.toMatch(/roar-some|triceratops|stegosaurus/);
     expect(turn.twoPictureChoices).toHaveLength(2);
