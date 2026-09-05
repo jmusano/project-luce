@@ -9,6 +9,8 @@
   --card: #fffaf3;
   --blush: #f4c4a8;
   --shadow: rgba(61, 74, 63, 0.12);
+  /* Floor for 3yo finger targets — never shrink below this */
+  --finger-min: 120px;
   font-family: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif;
   color: var(--ink);
   background: var(--bg);
@@ -48,12 +50,14 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: space-evenly;
-  gap: 0.5rem;
-  padding: 0.75rem 1.25rem 1.25rem;
+  justify-content: flex-start;
+  gap: 0.4rem;
+  padding: 0.5rem max(1rem, env(safe-area-inset-right)) max(0.75rem, env(safe-area-inset-bottom))
+    max(1rem, env(safe-area-inset-left));
   max-width: 1100px;
   width: 100%;
   margin: 0 auto;
+  min-height: 0;
 }
 
 /* —— Face / talk control —— */
@@ -65,10 +69,11 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.35rem;
+  gap: 0.25rem;
   padding: 0.25rem;
-  width: min(42vh, 280px);
-  max-width: 46vw;
+  width: min(36vh, 240px);
+  max-width: 42vw;
+  flex-shrink: 0;
 }
 
 .luce-face-svg {
@@ -103,7 +108,7 @@ body {
 
 .luce-wordmark {
   font-family: "Iowan Old Style", Palatino, Georgia, serif;
-  font-size: clamp(1.4rem, 3vw, 1.85rem);
+  font-size: clamp(1.25rem, 2.8vw, 1.7rem);
   font-weight: 600;
   letter-spacing: 0.04em;
   color: var(--sage-deep);
@@ -111,10 +116,12 @@ body {
 
 .status-line {
   margin: 0;
-  font-size: clamp(1.15rem, 2.6vw, 1.45rem);
-  color: var(--ink-soft);
-  font-weight: 500;
+  font-size: clamp(1.2rem, 2.8vw, 1.55rem);
+  color: var(--ink);
+  font-weight: 600;
   min-height: 1.5em;
+  letter-spacing: 0.01em;
+  flex-shrink: 0;
 }
 
 /* —— Captions —— */
@@ -123,15 +130,17 @@ body {
   background: var(--card);
   border: 2px solid var(--sage-soft);
   border-radius: 1.25rem;
-  padding: 0.85rem 1.15rem;
+  padding: 0.65rem 1rem;
   box-shadow: 0 4px 14px var(--shadow);
+  flex-shrink: 0;
 }
 
 .caption {
-  margin: 0.35rem 0;
-  font-size: clamp(1.05rem, 2.2vw, 1.25rem);
+  margin: 0.28rem 0;
+  font-size: clamp(1.1rem, 2.3vw, 1.3rem);
   line-height: 1.35;
   color: var(--ink);
+  font-weight: 500;
 }
 
 .caption .who {
@@ -139,13 +148,16 @@ body {
   font-weight: 700;
 }
 
-/* —— Giant picture choices —— */
+/* —— Giant picture choices (dominate lower half) —— */
 .picture-choices {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: clamp(0.75rem, 2vw, 1.5rem);
-  width: min(920px, 100%);
-  min-height: clamp(120px, 22vh, 180px);
+  gap: clamp(0.85rem, 2.5vw, 1.75rem);
+  width: min(960px, 100%);
+  flex: 1 1 auto;
+  min-height: max(var(--finger-min), 28vh);
+  margin-top: 0.35rem;
+  align-content: stretch;
 }
 
 .picture-choices--empty {
@@ -154,41 +166,57 @@ body {
 
 .picture-choice {
   appearance: none;
-  border: 3px solid var(--sage);
+  border: 4px solid var(--sage);
   background: var(--card);
-  border-radius: 1.5rem;
-  min-height: clamp(110px, 20vh, 170px);
+  border-radius: 1.75rem;
+  /* Never below big-finger floor */
+  min-height: max(var(--finger-min), 100%);
+  min-width: 0;
+  height: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 0.35rem;
+  gap: 0.45rem;
   cursor: pointer;
-  box-shadow: 0 6px 16px var(--shadow);
-  transition: transform 0.12s ease, background 0.12s ease;
-  padding: 0.75rem;
+  box-shadow: 0 8px 20px var(--shadow);
+  transition: transform 0.1s ease, background 0.1s ease, box-shadow 0.1s ease,
+    border-color 0.1s ease;
+  padding: clamp(0.75rem, 2vh, 1.25rem);
+  touch-action: manipulation;
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 .picture-choice:active:not(:disabled) {
-  transform: scale(0.97);
+  transform: scale(0.94);
   background: var(--sage-soft);
+  border-color: var(--sage-deep);
+  box-shadow: 0 2px 8px var(--shadow);
 }
 
 .picture-choice:disabled {
-  opacity: 0.72;
+  opacity: 0.7;
   cursor: default;
+  pointer-events: none;
 }
 
 .picture-emoji {
-  font-size: clamp(2.8rem, 8vw, 4.2rem);
+  font-size: clamp(3.6rem, 12vw, 6.5rem);
   line-height: 1;
+  filter: drop-shadow(0 2px 4px rgba(61, 74, 63, 0.1));
 }
 
 .picture-label {
-  font-size: clamp(1.1rem, 2.4vw, 1.4rem);
-  font-weight: 600;
+  font-size: clamp(1.25rem, 3vw, 1.75rem);
+  font-weight: 700;
   color: var(--ink);
   text-transform: lowercase;
+  letter-spacing: 0.02em;
+  text-align: center;
+  line-height: 1.15;
+  max-width: 100%;
+  overflow-wrap: anywhere;
 }
 
 /* —— Hidden parent corner —— */
@@ -216,7 +244,8 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 1rem;
+  padding: max(1rem, env(safe-area-inset-top)) max(1rem, env(safe-area-inset-right))
+    max(1rem, env(safe-area-inset-bottom)) max(1rem, env(safe-area-inset-left));
 }
 
 .parent-panel-inner {
@@ -291,16 +320,55 @@ body {
   line-height: 1.35;
 }
 
-@media (orientation: landscape) and (max-height: 520px) {
+/* iPad / short landscape: keep targets HUGE, row layout for width */
+@media (orientation: landscape) and (max-height: 620px) {
   .luce-face {
-    width: min(34vh, 200px);
+    width: min(28vh, 160px);
   }
+
+  .stage {
+    gap: 0.3rem;
+    padding-top: 0.35rem;
+  }
+
+  .captions {
+    padding: 0.45rem 0.85rem;
+  }
+
+  .caption {
+    margin: 0.15rem 0;
+    font-size: clamp(1rem, 2.1vh, 1.2rem);
+  }
+
+  .picture-choices {
+    min-height: max(var(--finger-min), 42vh);
+    gap: clamp(0.75rem, 2vw, 1.5rem);
+  }
+
   .picture-choice {
-    min-height: 96px;
+    /* Still never below finger floor — use row to fit height */
     flex-direction: row;
-    gap: 0.75rem;
+    gap: 0.85rem;
+    min-height: max(var(--finger-min), 100%);
+    padding: 0.65rem 1rem;
   }
+
   .picture-emoji {
-    font-size: 2.4rem;
+    font-size: clamp(3.2rem, 14vh, 5.5rem);
+  }
+
+  .picture-label {
+    font-size: clamp(1.2rem, 3.5vh, 1.65rem);
+  }
+}
+
+/* Tall portrait / iPad portrait — pictures own the lower half */
+@media (orientation: portrait) {
+  .picture-choices {
+    min-height: max(var(--finger-min), 32vh);
+  }
+
+  .picture-emoji {
+    font-size: clamp(4rem, 14vw, 7rem);
   }
 }
