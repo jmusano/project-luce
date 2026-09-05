@@ -202,6 +202,25 @@ describe('nextTurn', () => {
     expect(turn.twoPictureChoices).toHaveLength(2);
   });
 
+  it('enriches first-principles wonder (why/how/what if, never grades) across all topics', () => {
+    const fpIndex = STORY_BEAT_COUNT + 1;
+    const topics = ['dinos', 'forest', 'feelings', 'animals', 'nature'] as const;
+    for (const topic of topics) {
+      const turn = nextTurn({
+        turnIndex: fpIndex,
+        greeted: true,
+        topic,
+        naomiSaid: 'hello',
+      });
+      const lower = turn.speech.toLowerCase();
+      // At least one first-principles stem; wonder framing, never graded quiz language
+      expect(lower).toMatch(/what if|why |how /);
+      expect(lower).toMatch(/wonder|curious|think|kind|share|grow|hug|home|friend|rain|water|heart|body/);
+      expect(lower).not.toMatch(/\bquiz\b|\bgrade\b|\bscore\b|correct answer|wrong answer|\bpoints\b/);
+      expect(turn.twoPictureChoices).toHaveLength(2);
+    }
+  });
+
   it('hard-interrupts when Naomi mentions nut food (does not continue story beat)', () => {
     const turn = nextTurn({
       turnIndex: 2,

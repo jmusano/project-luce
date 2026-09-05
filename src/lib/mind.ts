@@ -280,7 +280,7 @@ const NATURE_BEATS: Beat[] = [
 const FIRST_PRINCIPLES: Record<Topic, Beat> = {
   dinos: {
     speech:
-      'Hmm… what if a T-rex and a triceratops both wanted the same sunny rock — how could they share it kindly?',
+      'Wonder time — just curious. What if a T-rex and a triceratops both wanted the same sunny rock? Why might sharing feel better than grabbing, and how could they take turns kindly?',
     choices: [
       { id: 'take-turns', emoji: '🔄', label: 'take turns' },
       { id: 'sit-together', emoji: '🤝', label: 'sit together' },
@@ -289,7 +289,7 @@ const FIRST_PRINCIPLES: Record<Topic, Beat> = {
   },
   forest: {
     speech:
-      'Why do you think La Befana and the Irish light both love cozy homes? What makes a home feel kind?',
+      'Wonder time — just curious. Why do you think La Befana and the Irish light both love cozy homes? What if kindness is what makes a home feel warm — how would you show it?',
     choices: [
       { id: 'warmth', emoji: '🏠', label: 'warmth' },
       { id: 'love', emoji: '💛', label: 'love' },
@@ -298,7 +298,7 @@ const FIRST_PRINCIPLES: Record<Topic, Beat> = {
   },
   feelings: {
     speech:
-      'How do you know when your heart needs a hug — what does your body tell you?',
+      'Wonder time — just curious. How do you know when your heart needs a hug? What if your tummy, tears, or smile are messengers — why might your body tell you first?',
     choices: [
       { id: 'tummy', emoji: '🫧', label: 'tummy' },
       { id: 'tears-smile', emoji: '💧', label: 'tears or smile' },
@@ -307,7 +307,7 @@ const FIRST_PRINCIPLES: Record<Topic, Beat> = {
   },
   animals: {
     speech:
-      'What if the bunny and the puppy both wanted the same soft blanket — how could they share?',
+      'Wonder time — just curious. What if the bunny and the puppy both wanted the same soft blanket? Why is sharing hard sometimes, and how could friends still be gentle?',
     choices: [
       { id: 'share-blanket', emoji: '🫂', label: 'share' },
       { id: 'take-turns-blanket', emoji: '🔄', label: 'turns' },
@@ -316,7 +316,7 @@ const FIRST_PRINCIPLES: Record<Topic, Beat> = {
   },
   nature: {
     speech:
-      'Why do you think rain helps flowers grow — what does water do for living things?',
+      'Wonder time — let\'s think. Why do you think rain helps flowers grow? What if water is a drink for living things — how does the sun help after the rain?',
     choices: [
       { id: 'drink', emoji: '💧', label: 'drink' },
       { id: 'grow', emoji: '🌱', label: 'grow' },
