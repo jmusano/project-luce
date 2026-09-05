@@ -433,6 +433,9 @@ body {
   line-height: 1;
   cursor: default;
   padding: 0;
+  touch-action: manipulation;
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 .parent-panel {
@@ -445,6 +448,19 @@ body {
   justify-content: center;
   padding: max(1rem, env(safe-area-inset-top)) max(1rem, env(safe-area-inset-right))
     max(1rem, env(safe-area-inset-bottom)) max(1rem, env(safe-area-inset-left));
+}
+
+/* Brief visual flash for Deaf parents — never paired with sound */
+.parent-panel--pulse .parent-panel-inner {
+  outline: 4px solid var(--sage-deep);
+  outline-offset: 2px;
+  animation: parent-pulse 0.65s ease-out;
+}
+
+@keyframes parent-pulse {
+  0% { transform: scale(1); box-shadow: 0 12px 32px var(--shadow); }
+  40% { transform: scale(1.015); box-shadow: 0 0 0 6px rgba(90, 122, 96, 0.35); }
+  100% { transform: scale(1); box-shadow: 0 12px 32px var(--shadow); }
 }
 
 .parent-panel-inner {

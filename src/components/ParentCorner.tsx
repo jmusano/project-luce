@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   micModeFromStatus,
   parentMicNote,
@@ -20,6 +20,7 @@ const LONG_PRESS_MS = 650;
 /**
  * Hidden parent corner: long-press tiny mark.
  * Visual + large captions + vibrate — NEVER sound. Both parents Deaf.
+ * No speechSynthesis / Audio here — hang-up and status are visual only.
  */
 export function ParentCorner({
   naomiCaption,
@@ -30,15 +31,19 @@ export function ParentCorner({
   onHangUp,
 }: Props) {
   const [open, setOpen] = useState(false);
+  const [pulse, setPulse] = useState(false);
   const timerRef = useRef<number | null>(null);
+  const prevCaptionsRef = useRef({ naomi: '', luce: '' });
 
-  const vibrateSoft = () => {
+  const vibrateSoft = useCallback(() => {
     try {
-      if (navigator.vibrate) navigator.vibrate([40, 30, 40]);
+      if (typeof navigator !== 'undefined' && navigator.vibrate) {
+        navigator.vibrate([40, 30, 40]);
+      }
     } catch {
       /* ignore — visual-only is enough */
     }
-  };
+  }, []);
 
   const clear = () => {
     if (timerRef.current != null) {
@@ -51,13 +56,35 @@ export function ParentCorner({
     clear();
     timerRef.current = window.setTimeout(() => {
       vibrateSoft();
+      setPulse(true);
       setOpen(true);
     }, LONG_PRESS_MS);
-  }, []);
+  }, [vibrateSoft]);
 
   const endPress = useCallback(() => {
     clear();
   }, []);
+
+  // Soft visual + haptic nudge when captions change while panel is open (Deaf parents).
+  useEffect(() => {
+    if (!open) return;
+    const prev = prevCaptionsRef.current;
+    const changed =
+      (naomiCaption && naomiCaption !== prev.naomi) ||
+      (luceCaption && luceCaption !== prev.luce);
+    prevCaptionsRef.current = { naomi: naomiCaption, luce: luceCaption };
+    if (!changed) return;
+    vibrateSoft();
+    setPulse(true);
+    const t = window.setTimeout(() => setPulse(false), 700);
+    return () => window.clearTimeout(t);
+  }, [open, naomiCaption, luceCaption, vibrateSoft]);
+
+  useEffect(() => {
+    if (!open || !pulse) return;
+    const t = window.setTimeout(() => setPulse(false), 700);
+    return () => window.clearTimeout(t);
+  }, [open, pulse]);
 
   if (!open) {
     return (
@@ -80,7 +107,11 @@ export function ParentCorner({
   const micNote = parentMicNote(micModeFromStatus(status, sttSupported));
 
   return (
-    <div className="parent-panel" role="dialog" aria-label="Parent corner">
+    <div
+      className={`parent-panel${pulse ? ' parent-panel--pulse' : ''}`}
+      role="dialog"
+      aria-label="Parent corner"
+    >
       <div className="parent-panel-inner">
         <header className="parent-panel-header">
           <h2>Parent</h2>
@@ -89,7 +120,8 @@ export function ParentCorner({
           </button>
         </header>
         <p className="parent-note">
-          Visual only — no sound. Large captions follow Naomi and Luce.
+          Visual only — no sound. Large captions follow Naomi and Luce. Vibrate on open
+          and when lines change.
         </p>
         {micNote && (
           <p className="parent-mic-note" role="status">

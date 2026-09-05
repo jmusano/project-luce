@@ -6,9 +6,11 @@
  */
 
 import {
+  buildAllergyInterruptTurn,
   filterPictureChoices,
   filterSpeechText,
   getAllergyTeachLine,
+  shouldHardAllergyInterrupt,
   type PictureChoice,
 } from './allergyFilter';
 
@@ -333,6 +335,15 @@ export function nextTurn(input: MindInput): MindTurn {
 
   if (said && isHangupPhrase(said)) {
     return finalize(FAREWELL, said, input.topic ?? null);
+  }
+
+  // Hard local allergy interrupt — never continue a beat that treats nuts as food.
+  if (shouldHardAllergyInterrupt(said)) {
+    const interrupt = buildAllergyInterruptTurn(said);
+    return {
+      ...interrupt,
+      topic: input.topic ?? null,
+    };
   }
 
   if (!input.greeted || input.turnIndex <= 0) {

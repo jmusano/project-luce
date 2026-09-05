@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { getAllergyTeachLine } from './allergyFilter';
+import { containsTreeNutFood, getAllergyTeachLine } from './allergyFilter';
 import {
   detectTopic,
   isHangupPhrase,
@@ -97,7 +97,26 @@ describe('nextTurn', () => {
     expect(turn.twoPictureChoices).toHaveLength(2);
   });
 
-  it('includes allergy teach line on the snack beat and filters food labels', () => {
+  it('hard-interrupts when Naomi mentions nut food (does not continue story beat)', () => {
+    const turn = nextTurn({
+      turnIndex: 2,
+      greeted: true,
+      topic: 'dinos',
+      naomiSaid: 'I want peanuts',
+    });
+    expect(turn.speech).toContain(getAllergyTeachLine());
+    expect(turn.speech.toLowerCase()).toMatch(/sick|don't eat/);
+    // Must not slip into the normal dino celebration / next beat
+    expect(turn.speech.toLowerCase()).not.toMatch(/roar-some|triceratops|stegosaurus/);
+    expect(turn.twoPictureChoices).toHaveLength(2);
+    for (const c of turn.twoPictureChoices) {
+      expect(containsTreeNutFood(c.label)).toBe(false);
+      expect(c.emoji).not.toBe('🥜');
+    }
+    expect(turn.topic).toBe('dinos');
+  });
+
+    it('includes allergy teach line on the snack beat and filters food labels', () => {
     const snackIndex = STORY_BEAT_COUNT + 2;
     const turn = nextTurn({
       turnIndex: snackIndex,
