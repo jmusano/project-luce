@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { createWebSpeechStt } from '../lib/stt';
 import { createWebSpeechTts } from '../lib/tts';
-import { isHangupPhrase, nextTurn } from '../lib/mind';
+import { isHangupPhrase, nextTurn, type Topic } from '../lib/mind';
 import type { PictureChoice } from '../lib/allergyFilter';
 
 export type UiStatus = 'tap' | 'listening' | 'talking' | 'unsupported';
@@ -14,6 +14,7 @@ export function useConversationSession() {
   const ttsRef = useRef(createWebSpeechTts());
   const turnIndexRef = useRef(0);
   const greetedRef = useRef(false);
+  const topicRef = useRef<Topic | null>(null);
   const sessionActiveRef = useRef(false);
   const speakingRef = useRef(false);
   const quietTimerRef = useRef<number | null>(null);
@@ -52,6 +53,7 @@ export function useConversationSession() {
     setChoices(null);
     turnIndexRef.current = 0;
     greetedRef.current = false;
+    topicRef.current = null;
   }, []);
 
   // Mutable callback bag so listen/speak can call each other without stale closures
@@ -106,7 +108,9 @@ export function useConversationSession() {
         naomiSaid: text,
         turnIndex: turnIndexRef.current,
         greeted: greetedRef.current,
+        topic: topicRef.current,
       });
+      if (turn.topic !== undefined) topicRef.current = turn.topic ?? null;
       api.current.speakTurn(
         turn.speech,
         turn.captions.luce,
@@ -121,7 +125,9 @@ export function useConversationSession() {
       naomiSaid: text,
       turnIndex: turnIndexRef.current,
       greeted: greetedRef.current,
+      topic: topicRef.current,
     });
+    if (turn.topic !== undefined) topicRef.current = turn.topic ?? null;
     greetedRef.current = true;
     turnIndexRef.current += 1;
     api.current.speakTurn(
@@ -186,6 +192,7 @@ export function useConversationSession() {
     setSessionActive(true);
     turnIndexRef.current = 0;
     greetedRef.current = false;
+    topicRef.current = null;
     setNaomiCaption('');
     setChoices(null);
     clearQuietTimer();
@@ -193,7 +200,8 @@ export function useConversationSession() {
     ttsRef.current.cancel();
     sttRef.current.abort();
 
-    const turn = nextTurn({ turnIndex: 0, greeted: false });
+    const turn = nextTurn({ turnIndex: 0, greeted: false, topic: null });
+    if (turn.topic !== undefined) topicRef.current = turn.topic ?? null;
     greetedRef.current = true;
     turnIndexRef.current = 1;
     api.current.speakTurn(
@@ -220,7 +228,9 @@ export function useConversationSession() {
         pictureId: choice.id,
         turnIndex: turnIndexRef.current,
         greeted: greetedRef.current,
+        topic: topicRef.current,
       });
+      if (turn.topic !== undefined) topicRef.current = turn.topic ?? null;
       greetedRef.current = true;
       turnIndexRef.current += 1;
       api.current.speakTurn(
