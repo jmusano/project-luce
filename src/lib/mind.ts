@@ -2,6 +2,7 @@
  * Lightweight preschool mind — soft teacher voice, short beats, topic branches.
  * Greeting offers talk OR two pictures; ~8 min arc ends with one first-principles
  * question (why/how/what if), never a quiz grade. Always exactly two picture choices.
+ * Topics span stories / nature / feelings / animals (plus dinos).
  * Allergy filter wraps food labels before anything leaves this module.
  */
 
@@ -17,7 +18,8 @@ import { isHangupPhrase } from './hangupPhrase';
 
 export { isHangupPhrase };
 
-export type Topic = 'dinos' | 'forest' | 'feelings';
+/** Preschool topic branches — stories map to forest folklore. */
+export type Topic = 'dinos' | 'forest' | 'feelings' | 'animals' | 'nature';
 
 export type MindTurn = {
   speech: string;
@@ -47,10 +49,10 @@ type Beat = {
   firstPrinciples?: boolean;
 };
 
-/** Default greeting pictures: dinosaurs / forest-or-folklore. Talk can also ask for stories or feelings. */
+/** Default greeting pictures: dinosaurs / forest-or-folklore. Talk unlocks animals, nature, feelings, stories. */
 const GREETING: Beat = {
   speech:
-    "Hi Naomi! I'm Luce. I'm so happy to play with you. Want dinosaurs, or a cozy forest story? You can tap a picture or just tell me — stories or feelings work too.",
+    "Hi Naomi! I'm Luce. I'm so happy to play with you. Want dinosaurs, or a cozy forest story? You can tap a picture or just tell me — animals, nature, or feelings work too.",
   choices: [
     { id: 'dinos', emoji: '🦖', label: 'dinosaurs' },
     { id: 'forest', emoji: '🌲', label: 'forest story' },
@@ -100,12 +102,13 @@ const DINO_BEATS: Beat[] = [
   },
 ];
 
+/** Cozy folklore / stories (Italian La Befana + soft Irish light — never scary). */
 const FOREST_BEATS: Beat[] = [
   {
     speech:
       'Into the cozy forest we go. Soft moss under our toes. Shall we follow a tiny friendly light, or listen for birds?',
     choices: [
-      { id: 'light', emoji: '✨', label: 'friendly light' },
+      { id: 'light', emoji: '✨', label: 'sparkle' },
       { id: 'birds', emoji: '🐦', label: 'birds' },
     ],
   },
@@ -156,8 +159,8 @@ const FEELINGS_BEATS: Beat[] = [
     speech:
       'When we feel wiggly, a soft stretch helps. Want to stretch tall like a tree, or curl small like a seed?',
     choices: [
-      { id: 'tall', emoji: '🌲', label: 'stretch tall' },
-      { id: 'seed', emoji: '🌱', label: 'curl small' },
+      { id: 'tall', emoji: '🌲', label: 'tall' },
+      { id: 'seed', emoji: '🌱', label: 'small' },
     ],
   },
   {
@@ -172,8 +175,8 @@ const FEELINGS_BEATS: Beat[] = [
     speech:
       'Brave and kind can sit together. Shall we practice a brave breath, or a kind smile?',
     choices: [
-      { id: 'breath', emoji: '😮‍💨', label: 'brave breath' },
-      { id: 'smile', emoji: '😊', label: 'kind smile' },
+      { id: 'breath', emoji: '😮‍💨', label: 'breath' },
+      { id: 'smile', emoji: '😊', label: 'smile' },
     ],
   },
   {
@@ -182,6 +185,94 @@ const FEELINGS_BEATS: Beat[] = [
     choices: [
       { id: 'self-hug', emoji: '🤗', label: 'soft hug' },
       { id: 'share-hug', emoji: '👪', label: 'share hug' },
+    ],
+  },
+];
+
+/** Friendly everyday animals — soft, never scary, short 3yo labels. */
+const ANIMALS_BEATS: Beat[] = [
+  {
+    speech:
+      'Animal friends! A soft bunny wiggles her nose. Shall we hop with the bunny, or pat a gentle puppy?',
+    choices: [
+      { id: 'bunny', emoji: '🐰', label: 'bunny' },
+      { id: 'puppy', emoji: '🐶', label: 'puppy' },
+    ],
+  },
+  {
+    speech:
+      'A kitty purrs on a sunny sill, and a pony waits in the meadow. Want kitty cuddles, or a pony ride?',
+    choices: [
+      { id: 'kitty', emoji: '🐱', label: 'kitty' },
+      { id: 'pony', emoji: '🐴', label: 'pony' },
+    ],
+  },
+  {
+    speech:
+      'Birds chirp hello, and fish make little splash circles. Shall we chirp with the birds, or splash with the fish?',
+    choices: [
+      { id: 'chirp', emoji: '🐦', label: 'birds' },
+      { id: 'splash-fish', emoji: '🐟', label: 'fish' },
+    ],
+  },
+  {
+    speech:
+      'A ladybug lands on our finger, and a butterfly floats by. Count ladybug spots, or dance with the butterfly?',
+    choices: [
+      { id: 'ladybug', emoji: '🐞', label: 'ladybug' },
+      { id: 'butterfly', emoji: '🦋', label: 'butterfly' },
+    ],
+  },
+  {
+    speech:
+      'Night hush: a sleepy owl blinks, and a whale sings under soft waves. Owl hoot, or whale song?',
+    choices: [
+      { id: 'owl', emoji: '🦉', label: 'owl' },
+      { id: 'whale', emoji: '🐋', label: 'whale' },
+    ],
+  },
+];
+
+/** Nature walk — sun, rain, river, rainbow; short labels, huge emoji. */
+const NATURE_BEATS: Beat[] = [
+  {
+    speech:
+      'Nature walk! The sky feels big today. Shall we warm up in the sun, or dance in soft rain?',
+    choices: [
+      { id: 'sun', emoji: '☀️', label: 'sun' },
+      { id: 'rain', emoji: '🌧️', label: 'rain' },
+    ],
+  },
+  {
+    speech:
+      'A cloud floats like a pillow, and flowers open their faces. Cloud hug, or smell the flowers?',
+    choices: [
+      { id: 'cloud', emoji: '☁️', label: 'cloud' },
+      { id: 'bloom', emoji: '🌼', label: 'flower' },
+    ],
+  },
+  {
+    speech:
+      'A little river sings over rocks, and a green hill waits for climbing. Splash in the river, or climb the hill?',
+    choices: [
+      { id: 'river', emoji: '🏞️', label: 'river' },
+      { id: 'hill', emoji: '⛰️', label: 'hill' },
+    ],
+  },
+  {
+    speech:
+      'Wind tickles our cheeks, and a rainbow paints the sky. Blow a wind kiss, or point at the rainbow?',
+    choices: [
+      { id: 'breeze', emoji: '🌬️', label: 'wind' },
+      { id: 'rainbow', emoji: '🌈', label: 'rainbow' },
+    ],
+  },
+  {
+    speech:
+      'We gather one soft leaf and one bright star wish. Hold a leaf, or make a star wish?',
+    choices: [
+      { id: 'leaf', emoji: '🍃', label: 'leaf' },
+      { id: 'wish-star', emoji: '⭐', label: 'star' },
     ],
   },
 ];
@@ -209,8 +300,26 @@ const FIRST_PRINCIPLES: Record<Topic, Beat> = {
     speech:
       'How do you know when your heart needs a hug — what does your body tell you?',
     choices: [
-      { id: 'tummy', emoji: '🫧', label: 'tummy feels' },
+      { id: 'tummy', emoji: '🫧', label: 'tummy' },
       { id: 'tears-smile', emoji: '💧', label: 'tears or smile' },
+    ],
+    firstPrinciples: true,
+  },
+  animals: {
+    speech:
+      'What if the bunny and the puppy both wanted the same soft blanket — how could they share?',
+    choices: [
+      { id: 'share-blanket', emoji: '🫂', label: 'share' },
+      { id: 'take-turns-blanket', emoji: '🔄', label: 'turns' },
+    ],
+    firstPrinciples: true,
+  },
+  nature: {
+    speech:
+      'Why do you think rain helps flowers grow — what does water do for living things?',
+    choices: [
+      { id: 'drink', emoji: '💧', label: 'drink' },
+      { id: 'grow', emoji: '🌱', label: 'grow' },
     ],
     firstPrinciples: true,
   },
@@ -228,10 +337,10 @@ const SNACK_BEAT: Beat = {
 
 const WIND_DOWN: Beat = {
   speech:
-    'What a lovely sitting. We can play dinosaurs again, or rest with a forest hush. What sounds nice?',
+    'What a lovely sitting. We can visit animal friends, or walk in nature again. What sounds nice?',
   choices: [
-    { id: 'dinos', emoji: '🦖', label: 'dinosaurs' },
-    { id: 'forest', emoji: '🌲', label: 'forest hush' },
+    { id: 'animals', emoji: '🐰', label: 'animals' },
+    { id: 'nature', emoji: '🌈', label: 'nature' },
   ],
 };
 
@@ -253,12 +362,34 @@ export const STORY_BEAT_COUNT = DINO_BEATS.length;
 function topicBeats(topic: Topic): Beat[] {
   if (topic === 'dinos') return DINO_BEATS;
   if (topic === 'feelings') return FEELINGS_BEATS;
+  if (topic === 'animals') return ANIMALS_BEATS;
+  if (topic === 'nature') return NATURE_BEATS;
   return FOREST_BEATS;
 }
 
 /**
+ * Every hardcoded picture pair in the catalog (greeting → topics → snack → wind-down → farewell).
+ * Used by tests to prove variety + allergy scrub on labels/emoji.
+ */
+export function collectAllPicturePairs(): [PictureChoice, PictureChoice][] {
+  const beats: Beat[] = [
+    GREETING,
+    ...DINO_BEATS,
+    ...FOREST_BEATS,
+    ...FEELINGS_BEATS,
+    ...ANIMALS_BEATS,
+    ...NATURE_BEATS,
+    ...Object.values(FIRST_PRINCIPLES),
+    SNACK_BEAT,
+    WIND_DOWN,
+    FAREWELL,
+  ];
+  return beats.map((b) => b.choices);
+}
+
+/**
  * Detect topic from picture id and/or spoken words.
- * Greeting pictures: dinos | forest; talk may also say stories/feelings/dino names.
+ * Greeting pictures: dinos | forest; talk may also say animals/nature/stories/feelings.
  */
 export function detectTopic(
   naomiSaid?: string,
@@ -289,6 +420,30 @@ export function detectTopic(
   }
 
   if (
+    id === 'animals' ||
+    id === 'bunny' ||
+    id === 'puppy' ||
+    id === 'kitty' ||
+    id === 'pony' ||
+    /\banimals?\b|\bbunny|\bpuppy|\bkitty|\bpony|\bladybug|\bbutterfly|\bwhale|\bowl\b/.test(
+      blob,
+    )
+  ) {
+    return 'animals';
+  }
+
+  if (
+    id === 'nature' ||
+    id === 'sun' ||
+    id === 'rain' ||
+    id === 'rainbow' ||
+    /\bnature\b|\brainbow\b|\bsun\b|\brain\b|\briver\b|\bhill\b/.test(blob)
+  ) {
+    // Avoid stealing forest "creek" / generic water — nature ids + explicit words only above
+    return 'nature';
+  }
+
+  if (
     id === 'forest' ||
     id === 'stories' ||
     /\bforest|folklore|story|stories|befana|irish|celtic|fairy|moss|creek\b/.test(
@@ -314,6 +469,8 @@ function celebrate(
   if (pictureId) {
     if (topic === 'dinos') return 'You picked that — roar-some! ';
     if (topic === 'feelings') return 'Thank you for sharing that. ';
+    if (topic === 'animals') return 'What a sweet animal friend! ';
+    if (topic === 'nature') return 'Nature is so lovely! ';
     return 'You picked that — wonderful! ';
   }
   if (said) {
@@ -375,6 +532,10 @@ export function nextTurn(input: MindInput): MindTurn {
   );
 }
 
+/**
+ * Allergy-scrub labels/emoji, then lock exactly two huge choices for the UI.
+ * Defense-in-depth with PictureChoices (which re-filters before render).
+ */
 function finalize(
   beat: Beat,
   naomiSaid: string,

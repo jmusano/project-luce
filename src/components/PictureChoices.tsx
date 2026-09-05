@@ -9,8 +9,11 @@ type Props = {
   onChoose: (choice: PictureChoice) => void;
 };
 
-/** Exactly two huge picture choices — sized for 3yo fingers / iPad landscape.
- * Defense-in-depth: re-run allergy filter so nut food never renders. */
+/**
+ * Exactly two huge picture choices — sized for 3yo fingers / iPad landscape.
+ * Defense-in-depth: always allergyFilter labels/emoji before show so nut food
+ * never renders even if a beat forgot to scrub.
+ */
 export function PictureChoices({ choices, disabled, onChoose }: Props) {
   if (!choices) {
     return <div className="picture-choices picture-choices--empty" aria-hidden="true" />;

@@ -1,6 +1,12 @@
 import { describe, expect, it } from 'vitest';
-import { containsTreeNutFood, getAllergyTeachLine } from './allergyFilter';
 import {
+  containsTreeNutFood,
+  filterPictureChoices,
+  getAllergyTeachLine,
+  type PictureChoice,
+} from './allergyFilter';
+import {
+  collectAllPicturePairs,
   detectTopic,
   isHangupPhrase,
   nextTurn,
@@ -39,8 +45,72 @@ describe('detectTopic', () => {
     expect(detectTopic(undefined, 'forest')).toBe('forest');
     expect(detectTopic('forest story')).toBe('forest');
     expect(detectTopic('La Befana')).toBe('forest');
+    expect(detectTopic('stories')).toBe('forest');
+    expect(detectTopic(undefined, 'stories')).toBe('forest');
     expect(detectTopic('feelings')).toBe('feelings');
     expect(detectTopic(undefined, 'feelings')).toBe('feelings');
+  });
+
+  it('detects animals and nature from picture or speech', () => {
+    expect(detectTopic(undefined, 'animals')).toBe('animals');
+    expect(detectTopic('animals please')).toBe('animals');
+    expect(detectTopic('bunny!')).toBe('animals');
+    expect(detectTopic('puppy')).toBe('animals');
+    expect(detectTopic(undefined, 'nature')).toBe('nature');
+    expect(detectTopic('nature walk')).toBe('nature');
+    expect(detectTopic('rainbow')).toBe('nature');
+  });
+});
+
+describe('picture-choice variety catalog', () => {
+  it('exposes many exactly-two pairs across dinos/forest/feelings/animals/nature', () => {
+    const pairs = collectAllPicturePairs();
+    // greeting + 5 topics×5 beats + 5 first-principles + snack + wind-down + farewell
+    expect(pairs.length).toBeGreaterThanOrEqual(30);
+    for (const pair of pairs) {
+      expect(pair).toHaveLength(2);
+      expect(pair[0].emoji.length).toBeGreaterThan(0);
+      expect(pair[1].emoji.length).toBeGreaterThan(0);
+      // short ~3yo labels
+      expect(pair[0].label.length).toBeGreaterThan(0);
+      expect(pair[0].label.length).toBeLessThanOrEqual(16);
+      expect(pair[1].label.length).toBeGreaterThan(0);
+      expect(pair[1].label.length).toBeLessThanOrEqual(16);
+    }
+    const labels = pairs.flat().map((c) => c.label.toLowerCase());
+    expect(labels).toEqual(expect.arrayContaining(['dinosaurs', 'bunny', 'puppy', 'sun', 'rainbow']));
+    expect(labels.some((l) => /forest|story|sparkle|befana|village/i.test(l) || l === 'sparkle' || l === 'village')).toBe(
+      true,
+    );
+    expect(labels).toEqual(expect.arrayContaining(['happy', 'heart', 'animals', 'nature']));
+  });
+
+  it('never lets nut labels or peanut emoji survive filter on catalog or injected nuts', () => {
+    const pairs = collectAllPicturePairs();
+    for (const pair of pairs) {
+      const safe = filterPictureChoices([...pair]);
+      expect(safe).toHaveLength(2);
+      for (const c of safe) {
+        expect(containsTreeNutFood(c.label)).toBe(false);
+        expect(containsTreeNutFood(c.id)).toBe(false);
+        expect(c.emoji).not.toBe('🥜');
+        expect(c.label.toLowerCase()).not.toMatch(
+          /peanut|almond|cashew|walnut|pecan|hazelnut|pistachio|\bnuts?\b/,
+        );
+      }
+    }
+
+    const injected: PictureChoice[] = [
+      { id: 'bad-a', emoji: '🥜', label: 'peanuts' },
+      { id: 'bad-b', emoji: '🍪', label: 'almond butter' },
+    ];
+    const scrubbed = filterPictureChoices(injected);
+    expect(scrubbed).toHaveLength(2);
+    for (const c of scrubbed) {
+      expect(containsTreeNutFood(c.label)).toBe(false);
+      expect(c.emoji).not.toBe('🥜');
+      expect(c.label.toLowerCase()).not.toMatch(/peanut|almond|cashew|walnut|nut/);
+    }
   });
 });
 
@@ -50,7 +120,7 @@ describe('nextTurn', () => {
     expect(turn.twoPictureChoices).toHaveLength(2);
     expect(turn.twoPictureChoices[0].id).toBe('dinos');
     expect(turn.twoPictureChoices[1].id).toBe('forest');
-    expect(turn.speech.toLowerCase()).toMatch(/dinosaur|forest|stories|feelings/);
+    expect(turn.speech.toLowerCase()).toMatch(/dinosaur|forest|animals|nature|feelings/);
     expect(turn.topic).toBeNull();
     expect(turn.captions.luce).toBe(turn.speech);
   });
@@ -83,9 +153,39 @@ describe('nextTurn', () => {
       greeted: true,
       topic: 'forest',
       pictureId: 'light',
-      naomiSaid: 'friendly light',
+      naomiSaid: 'sparkle',
     });
     expect(later.speech).toMatch(/Befana|Irish/i);
+  });
+
+  it('branches into animals with soft 3yo picture pairs', () => {
+    const turn = nextTurn({
+      turnIndex: 1,
+      greeted: true,
+      pictureId: 'animals',
+      naomiSaid: 'animals',
+    });
+    expect(turn.topic).toBe('animals');
+    expect(turn.twoPictureChoices).toHaveLength(2);
+    expect(turn.twoPictureChoices.map((c) => c.label.toLowerCase())).toEqual(
+      expect.arrayContaining(['bunny', 'puppy']),
+    );
+    expect(turn.speech.toLowerCase()).toMatch(/bunny|puppy|animal/);
+  });
+
+  it('branches into nature with short sun/rain style pairs', () => {
+    const turn = nextTurn({
+      turnIndex: 1,
+      greeted: true,
+      pictureId: 'nature',
+      naomiSaid: 'nature',
+    });
+    expect(turn.topic).toBe('nature');
+    expect(turn.twoPictureChoices).toHaveLength(2);
+    expect(turn.twoPictureChoices.map((c) => c.id)).toEqual(
+      expect.arrayContaining(['sun', 'rain']),
+    );
+    expect(turn.speech.toLowerCase()).toMatch(/sun|rain|nature/);
   });
 
   it('asks exactly one first-principles style question after the story arc', () => {
@@ -121,7 +221,7 @@ describe('nextTurn', () => {
     expect(turn.topic).toBe('dinos');
   });
 
-    it('includes allergy teach line on the snack beat and filters food labels', () => {
+  it('includes allergy teach line on the snack beat and filters food labels', () => {
     const snackIndex = STORY_BEAT_COUNT + 2;
     const turn = nextTurn({
       turnIndex: snackIndex,
@@ -159,17 +259,23 @@ describe('nextTurn', () => {
   });
 
   it('always returns exactly two picture choices every turn', () => {
-    for (let i = 0; i <= STORY_BEAT_COUNT + 3; i++) {
-      const turn = nextTurn({
-        turnIndex: i,
-        greeted: i > 0,
-        topic: i > 0 ? 'feelings' : null,
-        naomiSaid: i === 0 ? undefined : 'happy',
-        pictureId: i === 1 ? 'feelings' : undefined,
-      });
-      expect(turn.twoPictureChoices).toHaveLength(2);
-      expect(turn.twoPictureChoices[0].label.length).toBeGreaterThan(0);
-      expect(turn.twoPictureChoices[1].label.length).toBeGreaterThan(0);
+    const topics = ['feelings', 'animals', 'nature', 'dinos', 'forest'] as const;
+    for (const topic of topics) {
+      for (let i = 0; i <= STORY_BEAT_COUNT + 3; i++) {
+        const turn = nextTurn({
+          turnIndex: i,
+          greeted: i > 0,
+          topic: i > 0 ? topic : null,
+          naomiSaid: i === 0 ? undefined : 'hello',
+          pictureId: i === 1 ? topic : undefined,
+        });
+        expect(turn.twoPictureChoices).toHaveLength(2);
+        expect(turn.twoPictureChoices[0].label.length).toBeGreaterThan(0);
+        expect(turn.twoPictureChoices[1].label.length).toBeGreaterThan(0);
+        for (const c of turn.twoPictureChoices) {
+          expect(containsTreeNutFood(c.label)).toBe(false);
+        }
+      }
     }
   });
 });

@@ -129,3 +129,16 @@ describe('hard allergy interrupt', () => {
     expect(turn.captions.luce).toBe(turn.speech);
   });
 });
+
+describe('choice label scrub before show', () => {
+  it('scrubs nut words inside longer choice labels', () => {
+    const out = filterPictureChoices([
+      { id: 'snack-a', emoji: '🍪', label: 'peanut cookie' },
+      { id: 'snack-b', emoji: '🥛', label: 'milk' },
+    ]);
+    expect(out).toHaveLength(2);
+    expect(containsTreeNutFood(out[0].label)).toBe(false);
+    expect(out[0].emoji).not.toBe('🥜');
+    expect(out[1].label).toBe('milk');
+  });
+});
