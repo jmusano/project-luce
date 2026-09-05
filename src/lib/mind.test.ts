@@ -7,14 +7,19 @@ import {
   STORY_BEAT_COUNT,
 } from './mind';
 
-describe('isHangupPhrase', () => {
-  it('matches the locked hangup phrases', () => {
+describe('isHangupPhrase (mind re-export)', () => {
+  it('matches locked hangup phrases including kid "I am going later"', () => {
     expect(isHangupPhrase('bye')).toBe(true);
     expect(isHangupPhrase('bye-bye')).toBe(true);
     expect(isHangupPhrase('goodbye')).toBe(true);
     expect(isHangupPhrase('see you later')).toBe(true);
     expect(isHangupPhrase("I'm going later")).toBe(true);
     expect(isHangupPhrase('im going later')).toBe(true);
+    expect(isHangupPhrase('I am going later')).toBe(true);
+    expect(isHangupPhrase('Bye Bye!')).toBe(true);
+    expect(isHangupPhrase('night-night')).toBe(true);
+    expect(isHangupPhrase('see ya')).toBe(true);
+    expect(isHangupPhrase('I gotta go')).toBe(true);
   });
 
   it('does not hang up on ordinary play talk', () => {

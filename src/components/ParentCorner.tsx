@@ -5,6 +5,10 @@ import {
   parentStatusLabel,
   type UiStatus,
 } from '../lib/micFallback';
+import {
+  dismissHomeScreenTip,
+  shouldShowHomeScreenTip,
+} from '../lib/pwaHomeScreen';
 
 type Props = {
   naomiCaption: string;
@@ -21,6 +25,7 @@ const LONG_PRESS_MS = 650;
  * Hidden parent corner: long-press tiny mark.
  * Visual + large captions + vibrate — NEVER sound. Both parents Deaf.
  * No speechSynthesis / Audio here — hang-up and status are visual only.
+ * PWA Add to Home Screen tip lives here only (never kid chrome / no Help).
  */
 export function ParentCorner({
   naomiCaption,
@@ -32,6 +37,7 @@ export function ParentCorner({
 }: Props) {
   const [open, setOpen] = useState(false);
   const [pulse, setPulse] = useState(false);
+  const [showHomeTip, setShowHomeTip] = useState(() => shouldShowHomeScreenTip());
   const timerRef = useRef<number | null>(null);
   const prevCaptionsRef = useRef({ naomi: '', luce: '' });
 
@@ -86,6 +92,11 @@ export function ParentCorner({
     return () => window.clearTimeout(t);
   }, [open, pulse]);
 
+  const onDismissHomeTip = () => {
+    dismissHomeScreenTip();
+    setShowHomeTip(false);
+  };
+
   if (!open) {
     return (
       <button
@@ -123,6 +134,17 @@ export function ParentCorner({
           Visual only — no sound. Large captions follow Naomi and Luce. Vibrate on open
           and when lines change.
         </p>
+        {showHomeTip && (
+          <div className="parent-pwa-tip" role="note">
+            <p>
+              Tip: on iPad Safari, Share → <strong>Add to Home Screen</strong> for a
+              full-screen Luce icon (fewer browser chrome distractions).
+            </p>
+            <button type="button" className="parent-pwa-dismiss" onClick={onDismissHomeTip}>
+              Got it
+            </button>
+          </div>
+        )}
         {micNote && (
           <p className="parent-mic-note" role="status">
             {micNote}

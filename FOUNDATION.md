@@ -14,11 +14,11 @@ Treat this package as a self-contained Vite + React + TypeScript web foundation 
 
 - **One screen only** — no Stories / Folklore / Nature / Feelings / Learn tile home.
 - **Talk** — whole face is the talk control; one tap starts a session.
-- **Seamless Web Speech session** — after TTS ends, ~400ms pause, then listen again. Mic never opens while Luce is speaking. Short silence ends one utterance, not the session. Hang up on bye/bye-bye/goodbye/see you later/"I am going later", or ~2 minutes quiet. No "are you there?" nag.
+- **Seamless Web Speech session** — after TTS ends, ~400ms pause, then listen again. Mic never opens while Luce is speaking. Short silence ends one utterance, not the session. Hang up on bye/bye-bye/goodbye/see you later/see ya/night-night/"I am going later"/gotta go, or ~2 minutes quiet. No "are you there?" nag.
 - **Captions** — Naomi + Luce every turn (Deaf parents follow on screen).
 - **Pictures** — always exactly two huge choices after Luce speaks; tap and/or talk.
 - **Allergy** — hard local interrupt on nut-food talk; never show nuts as food (labels/emoji); teach line that nuts make Naomi sick.
-- **Parent corner** — tiny mark, long-press; visual + captions + vibrate; no sound.
+- **Parent corner** — tiny mark, long-press; visual + captions + vibrate; no sound. Optional first-run Add to Home Screen tip lives only here (never kid chrome).
 - **No** kid Help button, typing field, grades, Expo/Mini/ElevenLabs in this web slice.
 
 ## Stack

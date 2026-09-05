@@ -13,6 +13,9 @@ import {
   shouldHardAllergyInterrupt,
   type PictureChoice,
 } from './allergyFilter';
+import { isHangupPhrase } from './hangupPhrase';
+
+export { isHangupPhrase };
 
 export type Topic = 'dinos' | 'forest' | 'feelings';
 
@@ -35,13 +38,6 @@ export type MindInput = {
   /** Topic carried from prior turns in this sitting */
   topic?: Topic | null;
 };
-
-const GOODBYE_RE =
-  /\b(bye-bye|goodbye|good bye|bye|see you later|i'?m going later|im going later)\b/i;
-
-export function isHangupPhrase(text: string): boolean {
-  return GOODBYE_RE.test(text.trim());
-}
 
 type Beat = {
   speech: string;
