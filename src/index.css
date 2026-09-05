@@ -74,44 +74,243 @@ body {
   width: min(36vh, 240px);
   max-width: 42vw;
   flex-shrink: 0;
+  position: relative;
+  touch-action: manipulation;
+}
+
+.luce-face-glow {
+  position: absolute;
+  inset: 8% 12% 18%;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0;
+  transition: opacity 0.35s ease;
 }
 
 .luce-face-svg {
+  position: relative;
+  z-index: 1;
   width: 100%;
   height: auto;
   filter: drop-shadow(0 8px 18px var(--shadow));
-  transition: transform 0.2s ease;
+  transition: transform 0.35s ease, filter 0.35s ease;
+  transform-origin: center center;
+}
+
+.luce-wordmark {
+  position: relative;
+  z-index: 1;
+  font-family: "Iowan Old Style", Palatino, Georgia, serif;
+  font-size: clamp(1.25rem, 2.8vw, 1.7rem);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--sage-deep);
+  transition: color 0.35s ease, opacity 0.35s ease;
+}
+
+/* Idle tap — soft “come play” breathe */
+.luce-face.is-tap .luce-face-glow {
+  opacity: 0.55;
+  background: radial-gradient(circle, rgba(143, 188, 143, 0.35) 0%, transparent 70%);
+  animation: face-breathe-glow 2.8s ease-in-out infinite;
+}
+
+.luce-face.is-tap .luce-face-svg {
+  animation: face-breathe 2.8s ease-in-out infinite;
+}
+
+/* Listening — warm sage pulse rings + attentive lean */
+.luce-face.is-listening .luce-face-glow {
+  opacity: 0.75;
+  background: radial-gradient(circle, rgba(143, 188, 143, 0.5) 0%, rgba(216, 232, 216, 0.25) 45%, transparent 72%);
+  animation: face-listen-glow 1.6s ease-in-out infinite;
 }
 
 .luce-face.is-listening .luce-face-svg {
-  transform: scale(1.03);
+  transform: scale(1.04);
+  animation: face-listen-bob 1.6s ease-in-out infinite;
+  filter: drop-shadow(0 8px 18px var(--shadow)) drop-shadow(0 0 12px rgba(143, 188, 143, 0.35));
 }
 
-.luce-face.is-talking .luce-face-svg {
-  transform: scale(1.02);
+.luce-face.is-listening .luce-wordmark {
+  color: var(--sage);
 }
 
 .listen-ring {
-  animation: pulse-ring 1.4s ease-in-out infinite;
+  transform-origin: 100px 100px;
+}
+
+.listen-ring--outer {
+  animation: pulse-ring 1.6s ease-in-out infinite;
+}
+
+.listen-ring--inner {
+  animation: pulse-ring 1.6s ease-in-out 0.35s infinite;
+}
+
+/* Talking — soft speak bob + warm blush glow */
+.luce-face.is-talking .luce-face-glow {
+  opacity: 0.7;
+  background: radial-gradient(circle, rgba(244, 196, 168, 0.55) 0%, rgba(143, 188, 143, 0.2) 50%, transparent 72%);
+  animation: face-talk-glow 0.9s ease-in-out infinite;
+}
+
+.luce-face.is-talking .luce-face-svg {
+  animation: face-talk-bob 0.9s ease-in-out infinite;
+  filter: drop-shadow(0 8px 18px var(--shadow)) drop-shadow(0 0 10px rgba(244, 196, 168, 0.4));
+}
+
+.luce-face.is-talking .luce-mouth {
+  animation: mouth-speak 0.9s ease-in-out infinite;
+  transform-origin: 100px 136px;
+}
+
+.luce-face.is-talking .luce-cheek {
+  animation: cheek-warm 0.9s ease-in-out infinite;
+}
+
+.luce-face.is-talking .luce-wordmark {
+  color: #7a9e7f;
+}
+
+/* Unsupported / mic resting — calm, still, pictures-first */
+.luce-face.is-unsupported .luce-face-glow {
+  opacity: 0.35;
+  background: radial-gradient(circle, rgba(216, 232, 216, 0.45) 0%, transparent 70%);
+}
+
+.luce-face.is-unsupported .luce-face-svg {
+  transform: scale(0.98);
+  filter: drop-shadow(0 6px 14px var(--shadow));
+  opacity: 0.92;
+}
+
+.luce-face.is-unsupported .luce-wordmark {
+  color: var(--ink-soft);
+  opacity: 0.9;
+}
+
+@keyframes face-breathe {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.025);
+  }
+}
+
+@keyframes face-breathe-glow {
+  0%,
+  100% {
+    opacity: 0.4;
+    transform: scale(0.96);
+  }
+  50% {
+    opacity: 0.65;
+    transform: scale(1.04);
+  }
+}
+
+@keyframes face-listen-bob {
+  0%,
+  100% {
+    transform: scale(1.04) translateY(0);
+  }
+  50% {
+    transform: scale(1.055) translateY(-2px);
+  }
+}
+
+@keyframes face-listen-glow {
+  0%,
+  100% {
+    opacity: 0.55;
+    transform: scale(0.98);
+  }
+  50% {
+    opacity: 0.85;
+    transform: scale(1.06);
+  }
 }
 
 @keyframes pulse-ring {
+  0% {
+    opacity: 0.55;
+    stroke-width: 2.5;
+  }
+  50% {
+    opacity: 0.2;
+    stroke-width: 1.5;
+  }
+  100% {
+    opacity: 0.55;
+    stroke-width: 2.5;
+  }
+}
+
+@keyframes face-talk-bob {
   0%,
   100% {
-    opacity: 0.35;
-    transform-origin: center;
+    transform: scale(1.02) translateY(0);
+  }
+  50% {
+    transform: scale(1.035) translateY(-1.5px);
+  }
+}
+
+@keyframes face-talk-glow {
+  0%,
+  100% {
+    opacity: 0.5;
   }
   50% {
     opacity: 0.8;
   }
 }
 
-.luce-wordmark {
-  font-family: "Iowan Old Style", Palatino, Georgia, serif;
-  font-size: clamp(1.25rem, 2.8vw, 1.7rem);
-  font-weight: 600;
-  letter-spacing: 0.04em;
-  color: var(--sage-deep);
+@keyframes mouth-speak {
+  0%,
+  100% {
+    transform: scaleY(1);
+  }
+  50% {
+    transform: scaleY(1.18);
+  }
+}
+
+@keyframes cheek-warm {
+  0%,
+  100% {
+    opacity: 0.85;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .luce-face.is-tap .luce-face-svg,
+  .luce-face.is-tap .luce-face-glow,
+  .luce-face.is-listening .luce-face-svg,
+  .luce-face.is-listening .luce-face-glow,
+  .luce-face.is-talking .luce-face-svg,
+  .luce-face.is-talking .luce-face-glow,
+  .luce-face.is-talking .luce-mouth,
+  .luce-face.is-talking .luce-cheek,
+  .listen-ring--outer,
+  .listen-ring--inner {
+    animation: none;
+  }
+
+  .luce-face.is-listening .luce-face-svg {
+    transform: scale(1.04);
+  }
+
+  .luce-face.is-talking .luce-face-svg {
+    transform: scale(1.02);
+  }
 }
 
 .status-line {
