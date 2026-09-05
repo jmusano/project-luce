@@ -18,9 +18,7 @@ Treat this package as a self-contained Vite + React + TypeScript web foundation 
 - **Captions** — Naomi + Luce every turn (Deaf parents follow on screen).
 - **Pictures** — always exactly two huge choices after Luce speaks; tap and/or talk.
 - **Allergy** — local tree-nut food filter; never show nuts as food; occasional teach line.
-- **Parent corner** — tiny mark, long-press; large visual captions/status + vibrate; clear hang-up; no sound.
-- **Mic / STT fallback** — If SpeechRecognition is missing or permission denied: calm kid-safe status (unsupported vs denied vs listening), pictures stay fully usable, Parent corner shows a short visual mic note (captions, no sound).
-- **Wake lock** — Screen Wake Lock while session active (release on hang-up); graceful no-op if unsupported (keeps iPad awake).
+- **Parent corner** — tiny mark, long-press; visual + captions + vibrate; no sound.
 - **No** kid Help button, typing field, grades, Expo/Mini/ElevenLabs in this web slice.
 
 ## Stack
@@ -60,3 +58,22 @@ npm run dev
 ## Not in this package
 
 Git clone of `project-luce`, Expo app shell, Notion logs, Telegram parent ping, on-device model.
+
+## TTS (soft preschool voice)
+
+Web Speech defaults in `src/lib/tts.ts` target a warm preschool-teacher storyteller for Naomi (~3):
+
+- Rate ~0.92, pitch ~1.05
+- Prefer warm female English voices (iPad/iOS: Samantha, Karen, Moira, Fiona, Tessa, Victoria, …)
+- Pure helpers `pickVoice` / `scoreSoftPreschoolVoice` are unit-tested
+
+Later swap: same `TextToSpeech` interface → ElevenLabs / Mini.
+
+## Private preview (Cloudflare Pages)
+
+- Host: Cloudflare Pages project `luce-naomi` (password gate via Pages Functions).
+- Live preview: https://luce-naomi.pages.dev (family password gate; password is not in this repo).
+- Gate: `functions/` (Charca-style cookie auth). Env var **`CFP_PASSWORD`** must be set or the site returns 503 (fail closed).
+- Parents open the `*.pages.dev` URL → enter family password once → cookie lasts ~1 week.
+- Dashboard: Pages → Settings → Functions → **Fail closed** on.
+- Never commit the password. Never leave `CFP_PASSWORD` unset in production.

@@ -2,19 +2,11 @@
 
 One-screen talking companion for Naomi. Soft beige/sage preschool UI, Web Speech STT/TTS, dual captions, two giant picture choices, silent parent corner.
 
-
-## Temporary park
-
-**Temp park:** this web foundation currently lives at **https://github.com/jmusano/project-luce** (repo root) only until org access works. Migrate to `project-luce/luce-app/web/` when org access returns.
 ## Drop-in for GitHub
 
-This package is a **drop-in foundation** for:
+**Temp park:** this package currently lives at **jmusano/project-luce** (repo root). Migrate to `project-luce/luce-app/web/` when org access returns. Not long-term constitution without Jarrod yes.
 
-```
-project-luce/luce-app/web/
-```
-
-Copy the contents of this folder into that path (or use it as the `web/` package root). It is intentionally free of Expo, Mac Mini agent, ElevenLabs, and Notion — those plug in later behind the STT/TTS/mind interfaces.
+It is intentionally free of Expo, Mac Mini agent, ElevenLabs, and Notion — those plug in later behind the STT/TTS/mind interfaces.
 
 See **FOUNDATION.md** for the product lock and architecture notes.
 
