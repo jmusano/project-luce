@@ -14,8 +14,8 @@ export default function App() {
       return;
     }
     // One tap starts session; while active, face tap is a no-op during talk,
-    // or re-arms listen if somehow idle.
-    if (session.status === 'tap' || session.status === 'unsupported') {
+    // or re-arms listen if somehow idle. Picture path always stays available.
+    if (session.status === 'tap') {
       session.startSession();
     }
   };
@@ -27,6 +27,7 @@ export default function App() {
         luceCaption={session.luceCaption}
         status={session.status}
         sessionActive={session.sessionActive}
+        sttSupported={session.sttSupported}
         onHangUp={session.hangUp}
       />
 

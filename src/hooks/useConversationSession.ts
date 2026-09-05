@@ -4,8 +4,13 @@ import { createWebSpeechTts } from '../lib/tts';
 import { isHangupPhrase, nextTurn, type Topic } from '../lib/mind';
 import type { PictureChoice } from '../lib/allergyFilter';
 import { acquireScreenWakeLock, type WakeLockHandle } from '../lib/wakeLock';
+import {
+  classifySpeechError,
+  type MicMode,
+  type UiStatus,
+} from '../lib/micFallback';
 
-export type UiStatus = 'tap' | 'listening' | 'talking' | 'unsupported';
+export type { UiStatus } from '../lib/micFallback';
 
 const POST_TTS_MS = 400;
 const QUIET_HANGUP_MS = 2 * 60 * 1000;
@@ -22,6 +27,7 @@ export function useConversationSession() {
   const listenTimerRef = useRef<number | null>(null);
   const interimRef = useRef('');
   const wakeLockRef = useRef<WakeLockHandle | null>(null);
+  const micDeniedRef = useRef(false);
 
   const [status, setStatus] = useState<UiStatus>('tap');
   const [naomiCaption, setNaomiCaption] = useState('');
@@ -53,6 +59,7 @@ export function useConversationSession() {
     sessionActiveRef.current = false;
     setSessionActive(false);
     speakingRef.current = false;
+    micDeniedRef.current = false;
     clearQuietTimer();
     clearListenTimer();
     releaseWakeLock();
@@ -150,8 +157,16 @@ export function useConversationSession() {
   api.current.listenAgain = () => {
     if (!sessionActiveRef.current) return;
     if (speakingRef.current) return;
+
+    // Calm fallback: pictures stay the path forward — no scary errors, no mic loops.
     if (!sttRef.current.supported) {
       setStatus('unsupported');
+      api.current.armQuietHangup();
+      return;
+    }
+    if (micDeniedRef.current) {
+      setStatus('denied');
+      api.current.armQuietHangup();
       return;
     }
 
@@ -163,6 +178,13 @@ export function useConversationSession() {
       onStatus: (s) => {
         if (!sessionActiveRef.current) return;
         if (s === 'listening') setStatus('listening');
+        if (s === 'unsupported') {
+          setStatus('unsupported');
+        }
+        if (s === 'denied') {
+          micDeniedRef.current = true;
+          setStatus('denied');
+        }
       },
       onResult: ({ transcript, isFinal }) => {
         if (!sessionActiveRef.current) return;
@@ -175,6 +197,11 @@ export function useConversationSession() {
       },
       onEnd: () => {
         if (!sessionActiveRef.current || speakingRef.current) return;
+        if (micDeniedRef.current) {
+          setStatus('denied');
+          api.current.armQuietHangup();
+          return;
+        }
         const t = interimRef.current.trim();
         if (t) {
           api.current.handleKidUtterance(t);
@@ -185,8 +212,16 @@ export function useConversationSession() {
           if (sessionActiveRef.current && !speakingRef.current) api.current.listenAgain();
         }, 300);
       },
-      onError: () => {
+      onError: (message) => {
         if (!sessionActiveRef.current || speakingRef.current) return;
+        const kind = classifySpeechError(message);
+        if (kind === 'denied' || message === 'unsupported') {
+          if (kind === 'denied') micDeniedRef.current = true;
+          setStatus(message === 'unsupported' ? 'unsupported' : 'denied');
+          api.current.armQuietHangup();
+          return;
+        }
+        // Transient errors: soft retry without alarming the kid UI.
         api.current.armQuietHangup();
         listenTimerRef.current = window.setTimeout(() => {
           if (sessionActiveRef.current && !speakingRef.current) api.current.listenAgain();
@@ -202,6 +237,7 @@ export function useConversationSession() {
     turnIndexRef.current = 0;
     greetedRef.current = false;
     topicRef.current = null;
+    micDeniedRef.current = false;
     setNaomiCaption('');
     setChoices(null);
     clearQuietTimer();
@@ -273,10 +309,18 @@ export function useConversationSession() {
   }, []);
 
   const sttSupported = sttRef.current.supported;
-  const displayStatus: UiStatus =
-    !sttSupported && sessionActive && status !== 'talking' && status !== 'tap'
-      ? 'unsupported'
-      : status;
+  let displayStatus: UiStatus = status;
+  if (sessionActive && status !== 'talking' && status !== 'tap') {
+    if (!sttSupported) displayStatus = 'unsupported';
+    else if (micDeniedRef.current && status !== 'listening') displayStatus = 'denied';
+  }
+
+  const micMode: MicMode =
+    displayStatus === 'denied'
+      ? 'denied'
+      : !sttSupported || displayStatus === 'unsupported'
+        ? 'unsupported'
+        : 'ok';
 
   return {
     status: displayStatus,
@@ -285,6 +329,7 @@ export function useConversationSession() {
     choices,
     sessionActive,
     sttSupported,
+    micMode,
     ttsSupported: ttsRef.current.supported,
     startSession,
     hangUp,

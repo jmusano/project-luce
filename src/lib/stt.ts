@@ -3,7 +3,9 @@
  * Clean interface so Mini / cloud STT can swap in later.
  */
 
-export type SttStatus = 'idle' | 'listening' | 'unsupported' | 'error';
+import { classifySpeechError } from './micFallback';
+
+export type SttStatus = 'idle' | 'listening' | 'unsupported' | 'denied' | 'error';
 
 export type SttResult = {
   transcript: string;
@@ -48,7 +50,7 @@ export function createWebSpeechStt(lang = 'en-US'): SpeechToText {
       handlers = nextHandlers;
       if (!Ctor) {
         handlers.onStatus?.('unsupported');
-        handlers.onError?.('Speech recognition is not supported in this browser.');
+        handlers.onError?.('unsupported');
         return;
       }
       intentionalStop = false;
@@ -75,8 +77,14 @@ export function createWebSpeechStt(lang = 'en-US'): SpeechToText {
         handlers.onResult?.({ transcript: transcript.trim(), isFinal });
       };
       recognition.onerror = (ev: SpeechRecognitionErrorEvent) => {
-        if (ev.error === 'aborted' || ev.error === 'no-speech') {
+        const kind = classifySpeechError(ev.error || '');
+        if (kind === 'benign') {
           handlers.onStatus?.('idle');
+          return;
+        }
+        if (kind === 'denied') {
+          handlers.onStatus?.('denied');
+          handlers.onError?.(ev.error || 'not-allowed');
           return;
         }
         handlers.onStatus?.('error');

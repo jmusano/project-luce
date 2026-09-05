@@ -1,5 +1,7 @@
+import type { UiStatus } from '../lib/micFallback';
+
 type Props = {
-  status: 'tap' | 'listening' | 'talking' | 'unsupported';
+  status: UiStatus;
   onTap: () => void;
 };
 

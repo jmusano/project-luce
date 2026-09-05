@@ -1,30 +1,21 @@
 import { useCallback, useRef, useState } from 'react';
+import {
+  micModeFromStatus,
+  parentMicNote,
+  parentStatusLabel,
+  type UiStatus,
+} from '../lib/micFallback';
 
 type Props = {
   naomiCaption: string;
   luceCaption: string;
-  status: string;
+  status: UiStatus;
   sessionActive: boolean;
+  sttSupported: boolean;
   onHangUp: () => void;
 };
 
 const LONG_PRESS_MS = 650;
-
-function statusLabel(status: string, sessionActive: boolean): string {
-  if (!sessionActive && status === 'tap') return 'Idle — tap Luce to start';
-  switch (status) {
-    case 'listening':
-      return 'Listening to Naomi';
-    case 'talking':
-      return 'Luce is talking';
-    case 'unsupported':
-      return 'Mic unavailable — use pictures';
-    case 'tap':
-      return sessionActive ? 'Ready' : 'Idle — tap Luce to start';
-    default:
-      return status;
-  }
-}
 
 /**
  * Hidden parent corner: long-press tiny mark.
@@ -35,6 +26,7 @@ export function ParentCorner({
   luceCaption,
   status,
   sessionActive,
+  sttSupported,
   onHangUp,
 }: Props) {
   const [open, setOpen] = useState(false);
@@ -84,7 +76,8 @@ export function ParentCorner({
     );
   }
 
-  const label = statusLabel(status, sessionActive);
+  const label = parentStatusLabel(status, sessionActive);
+  const micNote = parentMicNote(micModeFromStatus(status, sttSupported));
 
   return (
     <div className="parent-panel" role="dialog" aria-label="Parent corner">
@@ -98,6 +91,11 @@ export function ParentCorner({
         <p className="parent-note">
           Visual only — no sound. Large captions follow Naomi and Luce.
         </p>
+        {micNote && (
+          <p className="parent-mic-note" role="status">
+            {micNote}
+          </p>
+        )}
         <div className="parent-status-block" role="status" aria-live="polite">
           <span className="parent-status-label">Status</span>
           <p className="parent-status-value">{label}</p>

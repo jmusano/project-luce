@@ -19,6 +19,7 @@ Treat this package as a self-contained Vite + React + TypeScript web foundation 
 - **Pictures** — always exactly two huge choices after Luce speaks; tap and/or talk.
 - **Allergy** — local tree-nut food filter; never show nuts as food; occasional teach line.
 - **Parent corner** — tiny mark, long-press; large visual captions/status + vibrate; clear hang-up; no sound.
+- **Mic / STT fallback** — If SpeechRecognition is missing or permission denied: calm kid-safe status (unsupported vs denied vs listening), pictures stay fully usable, Parent corner shows a short visual mic note (captions, no sound).
 - **Wake lock** — Screen Wake Lock while session active (release on hang-up); graceful no-op if unsupported (keeps iPad awake).
 - **No** kid Help button, typing field, grades, Expo/Mini/ElevenLabs in this web slice.
 
