@@ -9,11 +9,11 @@ import {
   type MicMode,
   type UiStatus,
 } from '../lib/micFallback';
+import { createQuietHangupTimer } from '../lib/quietHangup';
 
 export type { UiStatus } from '../lib/micFallback';
 
 const POST_TTS_MS = 400;
-const QUIET_HANGUP_MS = 2 * 60 * 1000;
 
 export function useConversationSession() {
   const sttRef = useRef(createWebSpeechStt());
@@ -23,11 +23,19 @@ export function useConversationSession() {
   const topicRef = useRef<Topic | null>(null);
   const sessionActiveRef = useRef(false);
   const speakingRef = useRef(false);
-  const quietTimerRef = useRef<number | null>(null);
   const listenTimerRef = useRef<number | null>(null);
   const interimRef = useRef('');
   const wakeLockRef = useRef<WakeLockHandle | null>(null);
   const micDeniedRef = useRef(false);
+  const hangUpRef = useRef(() => {});
+
+  // Quiet ~2 min hang-up — silent, no are-you-there nag; reset on talk/picture via arm().
+  const quietHangupRef = useRef(
+    createQuietHangupTimer({
+      isActive: () => sessionActiveRef.current,
+      onHangup: () => hangUpRef.current(),
+    }),
+  );
 
   const [status, setStatus] = useState<UiStatus>('tap');
   const [naomiCaption, setNaomiCaption] = useState('');
@@ -36,10 +44,7 @@ export function useConversationSession() {
   const [sessionActive, setSessionActive] = useState(false);
 
   const clearQuietTimer = () => {
-    if (quietTimerRef.current != null) {
-      window.clearTimeout(quietTimerRef.current);
-      quietTimerRef.current = null;
-    }
+    quietHangupRef.current.clear();
   };
 
   const clearListenTimer = () => {
@@ -72,6 +77,8 @@ export function useConversationSession() {
     topicRef.current = null;
   }, []);
 
+  hangUpRef.current = hangUp;
+
   // Mutable callback bag so listen/speak can call each other without stale closures
   const api = useRef({
     armQuietHangup: () => {},
@@ -81,9 +88,7 @@ export function useConversationSession() {
   });
 
   api.current.armQuietHangup = () => {
-    clearQuietTimer();
-    if (!sessionActiveRef.current) return;
-    quietTimerRef.current = window.setTimeout(() => hangUp(), QUIET_HANGUP_MS);
+    quietHangupRef.current.arm();
   };
 
   api.current.speakTurn = (speech, luce, naomi, two) => {
