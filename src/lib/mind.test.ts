@@ -126,6 +126,17 @@ describe('nextTurn', () => {
     expect(turn.captions.luce).toBe(turn.speech);
   });
 
+  it('keeps greeting short for ~3yo attention (still offers tap + talk topics)', () => {
+    const turn = nextTurn({ turnIndex: 0, greeted: false });
+    const words = turn.speech.trim().split(/\s+/);
+    // Cheap win: cut filler so Naomi hears the choice sooner
+    expect(words.length).toBeLessThanOrEqual(28);
+    expect(turn.speech.toLowerCase()).toMatch(/sit with me/);
+    expect(turn.speech.toLowerCase()).toMatch(/tap a picture|say animals/);
+    expect(turn.speech.toLowerCase()).not.toMatch(/whatever feels nice|so glad you're here/);
+    expect(turn.twoPictureChoices.map((c) => c.id)).toEqual(['dinos', 'forest']);
+  });
+
   it('branches into dino beats with real names after she picks dinos', () => {
     const turn = nextTurn({
       turnIndex: 1,

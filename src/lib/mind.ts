@@ -51,8 +51,9 @@ type Beat = {
 
 /** Default greeting pictures: dinosaurs / forest-or-folklore. Talk unlocks animals, nature, feelings, stories. */
 const GREETING: Beat = {
+  // Short for ~3yo attention: name + sit invite + two pictures + talk unlocks.
   speech:
-    "Hi Naomi! I'm Luce — come sit with me. I'm so glad you're here. Want dinosaurs, or a cozy forest story? You can tap a picture, or tell me animals, nature, or feelings. Whatever feels nice.",
+    "Hi Naomi! I'm Luce — come sit with me. Want dinosaurs, or a forest story? Tap a picture, or say animals, nature, or feelings.",
   choices: [
     { id: 'dinos', emoji: '🦖', label: 'dinosaurs' },
     { id: 'forest', emoji: '🌲', label: 'forest story' },
