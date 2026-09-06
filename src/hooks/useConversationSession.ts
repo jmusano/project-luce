@@ -96,8 +96,10 @@ export function useConversationSession() {
     sttRef.current.abort();
     speakingRef.current = true;
     setStatus('talking');
-    setLuceCaption(luce);
-    if (naomi) setNaomiCaption(naomi);
+    // Always show Luce text — fall back to spoken TTS string if caption empty.
+    setLuceCaption((luce || speech).trim());
+    const naomiTrimmed = (naomi ?? '').trim();
+    if (naomiTrimmed) setNaomiCaption(naomiTrimmed);
     setChoices(two);
     clearQuietTimer();
 
@@ -264,6 +266,8 @@ export function useConversationSession() {
     if (turn.topic !== undefined) topicRef.current = turn.topic ?? null;
     greetedRef.current = true;
     turnIndexRef.current = 1;
+    // Seed Luce caption before speak so Deaf parents see text immediately.
+    setLuceCaption((turn.captions.luce || turn.speech).trim());
     api.current.speakTurn(
       turn.speech,
       turn.captions.luce,
