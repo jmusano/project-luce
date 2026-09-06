@@ -37,7 +37,7 @@ export default function App() {
         <Captions naomi={session.naomiCaption} luce={session.luceCaption} />
         <PictureChoices
           choices={session.choices}
-          disabled={session.status === 'talking'}
+          disabled={false}
           onChoose={session.onPictureTap}
         />
       </main>

@@ -1,5 +1,9 @@
 import { describe, expect, it } from 'vitest';
-import { isHangupPhrase, normalizeHangupText } from './hangupPhrase';
+import {
+  isHangupPhrase,
+  isWakeContinuePhrase,
+  normalizeHangupText,
+} from './hangupPhrase';
 
 describe('normalizeHangupText', () => {
   it('lowercases and strips punctuation', () => {
@@ -61,5 +65,36 @@ describe('isHangupPhrase', () => {
     expect(isHangupPhrase('go')).toBe(false);
     expect(isHangupPhrase('see')).toBe(false);
     expect(isHangupPhrase('I gotta stay')).toBe(false);
+  });
+
+  it('does not treat wake-continue as hang-up', () => {
+    expect(isHangupPhrase('wake up')).toBe(false);
+    expect(isHangupPhrase("don't go")).toBe(false);
+    expect(isHangupPhrase('come back')).toBe(false);
+    expect(isHangupPhrase('more')).toBe(false);
+  });
+});
+
+describe('isWakeContinuePhrase', () => {
+  it('matches wake up / dont go / come back / again / more', () => {
+    expect(isWakeContinuePhrase('wake up')).toBe(true);
+    expect(isWakeContinuePhrase('Wake-Up!')).toBe(true);
+    expect(isWakeContinuePhrase("don't go")).toBe(true);
+    expect(isWakeContinuePhrase('do not go')).toBe(true);
+    expect(isWakeContinuePhrase('come back')).toBe(true);
+    expect(isWakeContinuePhrase('again soon')).toBe(true);
+    expect(isWakeContinuePhrase('play again')).toBe(true);
+    expect(isWakeContinuePhrase('more')).toBe(true);
+    expect(isWakeContinuePhrase('more please')).toBe(true);
+    expect(isWakeContinuePhrase('one more')).toBe(true);
+    expect(isWakeContinuePhrase('stay')).toBe(true);
+    expect(isWakeContinuePhrase('not yet')).toBe(true);
+  });
+
+  it('does not match ordinary play without continue intent', () => {
+    expect(isWakeContinuePhrase('')).toBe(false);
+    expect(isWakeContinuePhrase('dinosaurs')).toBe(false);
+    expect(isWakeContinuePhrase('bye')).toBe(false);
+    expect(isWakeContinuePhrase('straw')).toBe(false);
   });
 });

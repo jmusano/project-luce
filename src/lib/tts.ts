@@ -27,19 +27,19 @@ export type TtsOptions = {
   voiceNameIncludes?: string[];
 };
 
-/** Slightly slower than default — easier for a preschool listener to follow. */
-export const SOFT_PRESCHOOL_RATE = 0.92;
+/** Softer / slower for ~3yo — less robotic than default Web Speech. */
+export const SOFT_PRESCHOOL_RATE = 0.87;
 
-/** Gentle lift — warm storyteller, not cartoonish. */
-export const SOFT_PRESCHOOL_PITCH = 1.05;
+/** Warm gentle lift — soft storyteller, not cartoonish. */
+export const SOFT_PRESCHOOL_PITCH = 1.08;
 
 /**
  * Warm female / soft en voice name fragments.
- * Ordered roughly by preference for iOS/iPad Safari (Samantha, Karen, …)
- * then common desktop voices.
+ * Ordered by preference for iOS/iPad Safari warm female voices,
+ * then common desktop / Android voices.
  */
 export const DEFAULT_SOFT_VOICE_HINTS: readonly string[] = [
-  // iOS / iPadOS / macOS
+  // iOS / iPadOS / macOS — warm female first
   'Samantha',
   'Karen',
   'Moira',
@@ -52,6 +52,14 @@ export const DEFAULT_SOFT_VOICE_HINTS: readonly string[] = [
   'Zoe',
   'Serena',
   'Kate',
+  'Nora',
+  'Martha',
+  'Nicky',
+  'Melina',
+  'Helena',
+  'Joelle',
+  'Isha',
+  'Sandy',
   // Android / Chrome
   'Google US English',
   'Google UK English Female',
@@ -59,10 +67,25 @@ export const DEFAULT_SOFT_VOICE_HINTS: readonly string[] = [
   'Microsoft Zira',
   'Microsoft Aria',
   'Microsoft Jenny',
+  'Microsoft Michelle',
   // Generic fallbacks (last)
   'Female',
   'Woman',
+  'Soft',
 ];
+
+/**
+ * Slightly longer breath pauses for preschool storytelling.
+ * Web Speech often rushes sentence boundaries; ellipsis cues a softer pause.
+ */
+export function withSoftStoryPauses(text: string): string {
+  return text
+    .replace(/\s+/g, ' ')
+    .trim()
+    .replace(/([.!?])(\s+)/g, '$1 … ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
 
 type VoiceLike = {
   name: string;
@@ -176,7 +199,7 @@ export function createWebSpeechTts(options: TtsOptions = {}): TextToSpeech {
         return;
       }
       window.speechSynthesis.cancel();
-      const utter = new SpeechSynthesisUtterance(text);
+      const utter = new SpeechSynthesisUtterance(withSoftStoryPauses(text));
       utter.lang = lang;
       utter.rate = rate;
       utter.pitch = pitch;

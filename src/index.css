@@ -98,6 +98,49 @@ body {
   transform-origin: center center;
 }
 
+.luce-face-portrait-wrap {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  aspect-ratio: 1;
+  display: grid;
+  place-items: center;
+}
+
+.luce-face-portrait {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  height: auto;
+  border-radius: 50%;
+  object-fit: cover;
+  filter: drop-shadow(0 8px 18px var(--shadow));
+  transition: transform 0.35s ease, filter 0.35s ease, opacity 0.35s ease;
+  transform-origin: center center;
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+.luce-listen-rings {
+  position: absolute;
+  inset: -6%;
+  width: 112%;
+  height: 112%;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.luce-talk-pulse {
+  position: absolute;
+  inset: 6%;
+  border-radius: 50%;
+  border: 3px solid rgba(244, 196, 168, 0.65);
+  pointer-events: none;
+  z-index: 2;
+  animation: face-talk-glow 0.9s ease-in-out infinite;
+}
+
 .luce-wordmark {
   position: relative;
   z-index: 1;
@@ -116,7 +159,8 @@ body {
   animation: face-breathe-glow 2.8s ease-in-out infinite;
 }
 
-.luce-face.is-tap .luce-face-svg {
+.luce-face.is-tap .luce-face-svg,
+.luce-face.is-tap .luce-face-portrait {
   animation: face-breathe 2.8s ease-in-out infinite;
 }
 
@@ -143,7 +187,8 @@ body {
   animation: face-listen-glow 1.6s ease-in-out infinite;
 }
 
-.luce-face.is-listening .luce-face-svg {
+.luce-face.is-listening .luce-face-svg,
+.luce-face.is-listening .luce-face-portrait {
   transform: scale(1.04);
   animation: face-listen-bob 1.6s ease-in-out infinite;
   filter: drop-shadow(0 8px 18px var(--shadow)) drop-shadow(0 0 12px rgba(143, 188, 143, 0.35));
@@ -172,7 +217,8 @@ body {
   animation: face-talk-glow 0.9s ease-in-out infinite;
 }
 
-.luce-face.is-talking .luce-face-svg {
+.luce-face.is-talking .luce-face-svg,
+.luce-face.is-talking .luce-face-portrait {
   animation: face-talk-bob 0.9s ease-in-out infinite;
   filter: drop-shadow(0 8px 18px var(--shadow)) drop-shadow(0 0 10px rgba(244, 196, 168, 0.4));
 }
@@ -196,7 +242,8 @@ body {
   background: radial-gradient(circle, rgba(216, 232, 216, 0.45) 0%, transparent 70%);
 }
 
-.luce-face.is-unsupported .luce-face-svg {
+.luce-face.is-unsupported .luce-face-svg,
+.luce-face.is-unsupported .luce-face-portrait {
   transform: scale(0.98);
   filter: drop-shadow(0 6px 14px var(--shadow));
   opacity: 0.92;
@@ -342,12 +389,15 @@ body {
 
 @media (prefers-reduced-motion: reduce) {
   .luce-face.is-tap .luce-face-svg,
+  .luce-face.is-tap .luce-face-portrait,
   .luce-face.is-tap .luce-face-glow,
   .luce-face.is-tap .luce-lid,
   .luce-face.is-tap .luce-eye-shine,
   .luce-face.is-listening .luce-face-svg,
+  .luce-face.is-listening .luce-face-portrait,
   .luce-face.is-listening .luce-face-glow,
   .luce-face.is-talking .luce-face-svg,
+  .luce-face.is-talking .luce-face-portrait,
   .luce-face.is-talking .luce-face-glow,
   .luce-face.is-talking .luce-mouth,
   .luce-face.is-talking .luce-cheek,
@@ -360,11 +410,13 @@ body {
     opacity: 0;
   }
 
-  .luce-face.is-listening .luce-face-svg {
+  .luce-face.is-listening .luce-face-svg,
+  .luce-face.is-listening .luce-face-portrait {
     transform: scale(1.04);
   }
 
-  .luce-face.is-talking .luce-face-svg {
+  .luce-face.is-talking .luce-face-svg,
+  .luce-face.is-talking .luce-face-portrait {
     transform: scale(1.02);
   }
 }

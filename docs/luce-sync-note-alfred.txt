@@ -1,0 +1,27 @@
+Luce Naomi (~3) feedback fixes — folklore + softer voice — 2026-09-06 ~3:42pm ET
+
+Changed paths (luce-web):
+- src/lib/tts.ts (+ src/lib/tts.test.ts)
+- src/lib/hangupPhrase.ts (+ src/lib/hangupPhrase.test.ts)
+- src/lib/mind.ts (+ src/lib/mind.test.ts)
+- src/hooks/useConversationSession.ts
+- src/App.tsx
+
+Summary:
+1) Softer TTS: rate 0.87, pitch 1.08; expanded warm female iOS voice hints (Nora/Martha/Nicky/Melina/…); withSoftStoryPauses() adds ellipsis breath pauses after .!?
+2) Folklore-first forest arc (7 beats): Three Little Pigs (straw/sticks → stack/window → knock/tea), Little Red Riding Hood (cape/basket → grandma/flower), Goldilocks/beanstalk, La Befana close — always exactly 2 emoji pictures illustrating the beat. Keywords: pigs, wolf, red riding, grandma, fairy tale, storytime → forest.
+3) Original ice/winter/snow-princess TOPIC (no Disney spoken names). Detect frozen/elsa/anna/ice princess/snow queen/ice castle/snow → ice; spoken content uses ice castle / snow princess / snow sisters only.
+4) Farewell soft + cancellable hang-up: isWakeContinuePhrase (wake up / don't go / come back / again / more / stay). Session farewell 3500ms hangUp is cancellable; wake-continue resumes play. Farewell speech hints “wake up or come back”.
+5) Picture taps work while status===talking: App disabled={false}; onPictureTap cancels TTS, sets Naomi caption, next turn. Mic still blocked mid-TTS.
+
+Explicitly NOT added: forklift / construction / truck topic (Jarrod said folklore only).
+
+Locks kept: allergy hard interrupt; captions; exactly 2 pictures; no kid Help; no grades; no Disney character names in spoken ice/folklore content.
+
+Tests: 83 passed (8 files). Build: tsc -b + vite build OK.
+Do NOT wrangler deploy — parent deploys after Jarrod yes. No git push.
+
+Alfred paths:
+- /workspace/luce-web (source)
+- /workspace/luce-sync-note-alfred.txt (this note)
+- /workspace/luce-sync-for-alfred/ (prior sync bundle; refresh if packaging)

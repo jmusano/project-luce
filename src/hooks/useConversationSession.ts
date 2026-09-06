@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { createWebSpeechStt } from '../lib/stt';
 import { createWebSpeechTts } from '../lib/tts';
 import { isHangupPhrase, nextTurn, type Topic } from '../lib/mind';
+import { isWakeContinuePhrase } from '../lib/hangupPhrase';
 import type { PictureChoice } from '../lib/allergyFilter';
 import { acquireScreenWakeLock, type WakeLockHandle } from '../lib/wakeLock';
 import {
@@ -14,6 +15,7 @@ import { createQuietHangupTimer } from '../lib/quietHangup';
 export type { UiStatus } from '../lib/micFallback';
 
 const POST_TTS_MS = 400;
+const FAREWELL_HANGUP_MS = 3500;
 
 export function useConversationSession() {
   const sttRef = useRef(createWebSpeechStt());
@@ -28,6 +30,9 @@ export function useConversationSession() {
   const wakeLockRef = useRef<WakeLockHandle | null>(null);
   const micDeniedRef = useRef(false);
   const hangUpRef = useRef(() => {});
+  /** After bye farewell starts — cancelled by wake-up / don't go / come back / more. */
+  const farewellPendingRef = useRef(false);
+  const farewellHangupTimerRef = useRef<number | null>(null);
 
   // Quiet ~2 min hang-up — silent, no are-you-there nag; reset on talk/picture via arm().
   const quietHangupRef = useRef(
@@ -54,6 +59,14 @@ export function useConversationSession() {
     }
   };
 
+  const clearFarewellHangup = () => {
+    if (farewellHangupTimerRef.current != null) {
+      window.clearTimeout(farewellHangupTimerRef.current);
+      farewellHangupTimerRef.current = null;
+    }
+    farewellPendingRef.current = false;
+  };
+
   const releaseWakeLock = () => {
     const handle = wakeLockRef.current;
     wakeLockRef.current = null;
@@ -67,6 +80,7 @@ export function useConversationSession() {
     micDeniedRef.current = false;
     clearQuietTimer();
     clearListenTimer();
+    clearFarewellHangup();
     releaseWakeLock();
     sttRef.current.abort();
     ttsRef.current.cancel();
@@ -126,6 +140,29 @@ export function useConversationSession() {
     sttRef.current.abort();
     setNaomiCaption(text);
 
+    // After bye farewell: wake up / don't go / come back / more → cancel hang-up, keep playing
+    if (farewellPendingRef.current && isWakeContinuePhrase(text)) {
+      clearFarewellHangup();
+      ttsRef.current.cancel();
+      speakingRef.current = false;
+      const turn = nextTurn({
+        naomiSaid: text,
+        turnIndex: turnIndexRef.current,
+        greeted: greetedRef.current,
+        topic: topicRef.current,
+      });
+      if (turn.topic !== undefined) topicRef.current = turn.topic ?? null;
+      greetedRef.current = true;
+      turnIndexRef.current += 1;
+      api.current.speakTurn(
+        turn.speech,
+        turn.captions.luce,
+        turn.captions.naomi,
+        turn.twoPictureChoices,
+      );
+      return;
+    }
+
     if (isHangupPhrase(text)) {
       const turn = nextTurn({
         naomiSaid: text,
@@ -134,15 +171,22 @@ export function useConversationSession() {
         topic: topicRef.current,
       });
       if (turn.topic !== undefined) topicRef.current = turn.topic ?? null;
+      clearFarewellHangup();
+      farewellPendingRef.current = true;
       api.current.speakTurn(
         turn.speech,
         turn.captions.luce,
         turn.captions.naomi,
         turn.twoPictureChoices,
       );
-      window.setTimeout(() => hangUp(), 3500);
+      farewellHangupTimerRef.current = window.setTimeout(() => {
+        farewellHangupTimerRef.current = null;
+        if (farewellPendingRef.current) hangUp();
+      }, FAREWELL_HANGUP_MS);
       return;
     }
+
+    clearFarewellHangup();
 
     const turn = nextTurn({
       naomiSaid: text,
@@ -163,6 +207,7 @@ export function useConversationSession() {
 
   api.current.listenAgain = () => {
     if (!sessionActiveRef.current) return;
+    // Keep mic from starting mid-TTS
     if (speakingRef.current) return;
 
     // Calm fallback: pictures stay the path forward — no scary errors, no mic loops.
@@ -245,6 +290,7 @@ export function useConversationSession() {
     greetedRef.current = false;
     topicRef.current = null;
     micDeniedRef.current = false;
+    clearFarewellHangup();
     setNaomiCaption('');
     setChoices(null);
     clearQuietTimer();
@@ -282,9 +328,15 @@ export function useConversationSession() {
         startSession();
         return;
       }
-      if (speakingRef.current) return;
-      sttRef.current.abort();
+      // Picture taps work during talking: cancel TTS and take the choice.
+      clearListenTimer();
       clearQuietTimer();
+      clearFarewellHangup();
+      sttRef.current.abort();
+      if (speakingRef.current) {
+        ttsRef.current.cancel();
+        speakingRef.current = false;
+      }
       setNaomiCaption(choice.label);
 
       const turn = nextTurn({
@@ -311,6 +363,7 @@ export function useConversationSession() {
     return () => {
       clearQuietTimer();
       clearListenTimer();
+      clearFarewellHangup();
       releaseWakeLock();
       sttRef.current.abort();
       ttsRef.current.cancel();

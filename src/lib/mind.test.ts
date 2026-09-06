@@ -9,6 +9,9 @@ import {
   collectAllPicturePairs,
   detectTopic,
   firstPrinciplesSpeechCatalog,
+  forestSpeechCatalog,
+  FOREST_BEAT_COUNT,
+  iceSpeechCatalog,
   isHangupPhrase,
   nextTurn,
   STORY_BEAT_COUNT,
@@ -42,12 +45,19 @@ describe('detectTopic', () => {
     expect(detectTopic('triceratops!')).toBe('dinos');
   });
 
-  it('detects forest/folklore/stories and feelings', () => {
+  it('detects forest folklore / classics and feelings', () => {
     expect(detectTopic(undefined, 'forest')).toBe('forest');
     expect(detectTopic('forest story')).toBe('forest');
     expect(detectTopic('La Befana')).toBe('forest');
     expect(detectTopic('stories')).toBe('forest');
     expect(detectTopic(undefined, 'stories')).toBe('forest');
+    expect(detectTopic('storytime')).toBe('forest');
+    expect(detectTopic('fairy tale')).toBe('forest');
+    expect(detectTopic('three little pigs')).toBe('forest');
+    expect(detectTopic('red riding hood')).toBe('forest');
+    expect(detectTopic('grandma')).toBe('forest');
+    expect(detectTopic('wolf')).toBe('forest');
+    expect(detectTopic('goldilocks')).toBe('forest');
     expect(detectTopic('feelings')).toBe('feelings');
     expect(detectTopic(undefined, 'feelings')).toBe('feelings');
   });
@@ -61,29 +71,58 @@ describe('detectTopic', () => {
     expect(detectTopic('nature walk')).toBe('nature');
     expect(detectTopic('rainbow')).toBe('nature');
   });
+
+  it('routes frozen/elsa/anna/ice princess/snow to original ice topic', () => {
+    expect(detectTopic('frozen')).toBe('ice');
+    expect(detectTopic('elsa')).toBe('ice');
+    expect(detectTopic('anna')).toBe('ice');
+    expect(detectTopic('ice princess')).toBe('ice');
+    expect(detectTopic('snow queen')).toBe('ice');
+    expect(detectTopic('ice castle')).toBe('ice');
+    expect(detectTopic('snow')).toBe('ice');
+    expect(detectTopic(undefined, 'ice-castle')).toBe('ice');
+  });
+
+  it('does not invent a forklift/truck topic', () => {
+    expect(detectTopic('forklift')).not.toBe('dinos');
+    // trucks are not a topic — leave null or fall through to null
+    expect(detectTopic('forklift')).toBeNull();
+    expect(detectTopic('construction truck')).toBeNull();
+  });
 });
 
 describe('picture-choice variety catalog', () => {
-  it('exposes many exactly-two pairs across dinos/forest/feelings/animals/nature', () => {
+  it('exposes many exactly-two pairs across topics including folklore + ice', () => {
     const pairs = collectAllPicturePairs();
-    // greeting + 5 topics×5 beats + ≥10 first-principles + snack + wind-down + farewell
+    // greeting + topics beats + first-principles + snack + wind-down + farewell
     expect(pairs.length).toBeGreaterThanOrEqual(35);
     for (const pair of pairs) {
       expect(pair).toHaveLength(2);
       expect(pair[0].emoji.length).toBeGreaterThan(0);
       expect(pair[1].emoji.length).toBeGreaterThan(0);
-      // short ~3yo labels
       expect(pair[0].label.length).toBeGreaterThan(0);
       expect(pair[0].label.length).toBeLessThanOrEqual(14);
       expect(pair[1].label.length).toBeGreaterThan(0);
       expect(pair[1].label.length).toBeLessThanOrEqual(14);
     }
     const labels = pairs.flat().map((c) => c.label.toLowerCase());
-    expect(labels).toEqual(expect.arrayContaining(['dinosaurs', 'bunny', 'puppy', 'sun', 'rainbow']));
-    expect(labels.some((l) => /forest|story|sparkle|befana|village/i.test(l) || l === 'sparkle' || l === 'village')).toBe(
-      true,
+    expect(labels).toEqual(
+      expect.arrayContaining(['dinosaurs', 'bunny', 'puppy', 'sun', 'rainbow']),
     );
-    expect(labels).toEqual(expect.arrayContaining(['happy', 'heart', 'animals', 'nature']));
+    expect(
+      labels.some(
+        (l) =>
+          /straw|sticks|cape|basket|grandma|ice castle|snowflake|forest|story|sparkle/i.test(
+            l,
+          ) ||
+          l === 'straw' ||
+          l === 'red cape',
+      ),
+    ).toBe(true);
+    expect(labels).toEqual(
+      expect.arrayContaining(['happy', 'heart', 'animals', 'nature']),
+    );
+    expect(labels.some((l) => /ice|snow|mitten|sled|cocoa/i.test(l))).toBe(true);
   });
 
   it('never lets nut labels or peanut emoji survive filter on catalog or injected nuts', () => {
@@ -129,7 +168,6 @@ describe('nextTurn', () => {
   it('keeps greeting short for ~3yo attention (still offers tap + talk topics)', () => {
     const turn = nextTurn({ turnIndex: 0, greeted: false });
     const words = turn.speech.trim().split(/\s+/);
-    // Cheap win: cut filler so Naomi hears the choice sooner
     expect(words.length).toBeLessThanOrEqual(28);
     expect(turn.speech.toLowerCase()).toMatch(/sit with me/);
     expect(turn.speech.toLowerCase()).toMatch(/tap a picture|say animals/);
@@ -151,7 +189,7 @@ describe('nextTurn', () => {
     expect(blob).not.toMatch(/cretaceous|jurassic period|extinction event|encyclopedia/);
   });
 
-  it('branches into forest/folklore with light Italian or Irish notes', () => {
+  it('branches into folklore forest with pigs and matching pictures', () => {
     const turn = nextTurn({
       turnIndex: 1,
       greeted: true,
@@ -159,15 +197,54 @@ describe('nextTurn', () => {
       naomiSaid: 'forest story',
     });
     expect(turn.topic).toBe('forest');
-    // Later forest beats mention Befana / Irish; early beat is cozy forest join-play
-    const later = nextTurn({
-      turnIndex: 2,
+    expect(turn.speech.toLowerCase()).toMatch(/three little pigs|little pigs|straw|sticks/);
+    expect(turn.twoPictureChoices).toHaveLength(2);
+    expect(turn.twoPictureChoices.map((c) => c.id)).toEqual(
+      expect.arrayContaining(['straw', 'sticks']),
+    );
+  });
+
+  it('tells Little Red Riding Hood beat with cape/basket pictures', () => {
+    const turn = nextTurn({
+      turnIndex: 4,
       greeted: true,
       topic: 'forest',
-      pictureId: 'light',
-      naomiSaid: 'sparkle',
+      pictureId: 'knock',
+      naomiSaid: 'knock',
     });
-    expect(later.speech).toMatch(/Befana|Irish/i);
+    expect(turn.topic).toBe('forest');
+    expect(turn.speech).toMatch(/Red Riding Hood|red cape|Grandma/i);
+    expect(turn.twoPictureChoices.map((c) => c.id)).toEqual(
+      expect.arrayContaining(['cape', 'basket']),
+    );
+  });
+
+  it('keeps longer folklore catalog with pigs, red riding, goldilocks', () => {
+    expect(FOREST_BEAT_COUNT).toBeGreaterThanOrEqual(6);
+    const catalog = forestSpeechCatalog().join(' ').toLowerCase();
+    expect(catalog).toMatch(/three little pigs|little pigs/);
+    expect(catalog).toMatch(/red riding hood/);
+    expect(catalog).toMatch(/goldilocks|beanstalk/);
+    expect(catalog).not.toMatch(/\belsa\b|\banna\b|\bolaf\b|arendelle|let it go/);
+    expect(catalog).not.toMatch(/forklift|dump truck|construction/);
+  });
+
+  it('branches into original ice topic without Disney character names', () => {
+    const turn = nextTurn({
+      turnIndex: 1,
+      greeted: true,
+      naomiSaid: 'elsa',
+    });
+    expect(turn.topic).toBe('ice');
+    expect(turn.twoPictureChoices).toHaveLength(2);
+    const lower = turn.speech.toLowerCase();
+    expect(lower).toMatch(/ice castle|snow|snow princess|snowflake/);
+    expect(lower).not.toMatch(/\belsa\b|\banna\b|\bolaf\b|arendelle|let it go/);
+    for (const speech of iceSpeechCatalog()) {
+      expect(speech.toLowerCase()).not.toMatch(
+        /\belsa\b|\banna\b|\bolaf\b|arendelle|let it go/,
+      );
+    }
   });
 
   it('branches into animals with soft 3yo picture pairs', () => {
@@ -200,8 +277,8 @@ describe('nextTurn', () => {
     expect(turn.speech.toLowerCase()).toMatch(/sun|rain|nature/);
   });
 
-  it('asks exactly one first-principles style question after the story arc', () => {
-    const fpIndex = STORY_BEAT_COUNT + 1; // turnIndex after greeting + N story beats
+  it('asks exactly one first-principles style question after the dino story arc', () => {
+    const fpIndex = STORY_BEAT_COUNT + 1;
     const turn = nextTurn({
       turnIndex: fpIndex,
       greeted: true,
@@ -214,10 +291,12 @@ describe('nextTurn', () => {
     expect(turn.twoPictureChoices).toHaveLength(2);
   });
 
-  it('enriches first-principles wonder (why/how/what if, never grades) across all topics', () => {
-    const fpIndex = STORY_BEAT_COUNT + 1;
-    const topics = ['dinos', 'forest', 'feelings', 'animals', 'nature'] as const;
+  it('enriches first-principles wonder across all topics including ice', () => {
+    const topics = ['dinos', 'forest', 'feelings', 'animals', 'nature', 'ice'] as const;
     for (const topic of topics) {
+      const beatsLen =
+        topic === 'forest' ? FOREST_BEAT_COUNT : STORY_BEAT_COUNT;
+      const fpIndex = beatsLen + 1;
       const turn = nextTurn({
         turnIndex: fpIndex,
         greeted: true,
@@ -225,9 +304,10 @@ describe('nextTurn', () => {
         naomiSaid: 'hello',
       });
       const lower = turn.speech.toLowerCase();
-      // At least one first-principles stem; wonder framing, never graded quiz language
       expect(lower).toMatch(/what if|why |how /);
-      expect(lower).toMatch(/wonder|curious|think|kind|share|grow|hug|home|friend|rain|water|heart|body|listen|gentle|notice/);
+      expect(lower).toMatch(
+        /wonder|curious|think|kind|share|grow|hug|home|friend|rain|water|heart|body|listen|gentle|notice|help|warm|snow|ice|mitt/,
+      );
       expect(lower).not.toMatch(/\bquiz\b|\bgrade\b|\bscore\b|correct answer|wrong answer|\bpoints\b/);
       expect(turn.twoPictureChoices).toHaveLength(2);
       for (const c of turn.twoPictureChoices) {
@@ -239,14 +319,13 @@ describe('nextTurn', () => {
 
   it('offers multiple first-principles wonder angles per topic catalog', () => {
     const catalog = firstPrinciplesSpeechCatalog();
-    // 5 topics × ≥2 variants
-    expect(catalog.length).toBeGreaterThanOrEqual(10);
+    // 6 topics × ≥2 variants
+    expect(catalog.length).toBeGreaterThanOrEqual(12);
     const stems = catalog.filter((s) => /what if|why |how /i.test(s));
     expect(stems.length).toBe(catalog.length);
     for (const speech of catalog) {
       expect(speech.toLowerCase()).not.toMatch(/\bquiz\b|\bgrade\b|\bscore\b|correct answer/);
     }
-    // Distinct angles: more unique openings than topics alone
     const unique = new Set(catalog.map((s) => s.slice(0, 48).toLowerCase()));
     expect(unique.size).toBeGreaterThanOrEqual(8);
   });
@@ -267,7 +346,6 @@ describe('nextTurn', () => {
       naomiSaid: 'quiet stretch please',
       pictureId: 'stretch',
     });
-    // Deterministic per input; different inputs should usually diverge across variants
     const speeches = [a.speech, b.speech];
     expect(speeches.every((s) => /what if|why |how /i.test(s))).toBe(true);
     expect(a.twoPictureChoices).toHaveLength(2);
@@ -295,10 +373,8 @@ describe('nextTurn', () => {
     });
     expect(turn.speech).toContain(getAllergyTeachLine());
     expect(turn.speech.toLowerCase()).toMatch(/sick|don't eat/);
-    // Warm interrupt — soft co-play voice, not a cold bark
     expect(turn.speech.toLowerCase()).toMatch(/oh |sweetheart|careful|with me|soft |let's/);
     expect(turn.speech.toLowerCase()).not.toMatch(/\bwhoa\b|\bstop\.?\b/);
-    // Must not slip into the normal dino celebration / next beat
     expect(turn.speech.toLowerCase()).not.toMatch(/roar-some|triceratops|stegosaurus/);
     expect(turn.twoPictureChoices).toHaveLength(2);
     for (const c of turn.twoPictureChoices) {
@@ -323,7 +399,7 @@ describe('nextTurn', () => {
     expect(turn.twoPictureChoices).toHaveLength(2);
   });
 
-  it('farewells on hangup without changing hangup detection', () => {
+  it('farewells softly on hangup and hints wake-up continue', () => {
     const turn = nextTurn({
       turnIndex: 3,
       greeted: true,
@@ -331,6 +407,7 @@ describe('nextTurn', () => {
       naomiSaid: 'bye-bye',
     });
     expect(turn.speech.toLowerCase()).toMatch(/bye-bye|see you soon/);
+    expect(turn.speech.toLowerCase()).toMatch(/wake up|come back/);
     expect(turn.twoPictureChoices).toHaveLength(2);
   });
 
@@ -346,9 +423,11 @@ describe('nextTurn', () => {
   });
 
   it('always returns exactly two picture choices every turn', () => {
-    const topics = ['feelings', 'animals', 'nature', 'dinos', 'forest'] as const;
+    const topics = ['feelings', 'animals', 'nature', 'dinos', 'forest', 'ice'] as const;
     for (const topic of topics) {
-      for (let i = 0; i <= STORY_BEAT_COUNT + 3; i++) {
+      const max =
+        (topic === 'forest' ? FOREST_BEAT_COUNT : STORY_BEAT_COUNT) + 3;
+      for (let i = 0; i <= max; i++) {
         const turn = nextTurn({
           turnIndex: i,
           greeted: i > 0,

@@ -5,19 +5,37 @@ import {
   SOFT_PRESCHOOL_RATE,
   pickVoice,
   scoreSoftPreschoolVoice,
+  withSoftStoryPauses,
 } from './tts';
 
 describe('soft preschool TTS defaults', () => {
-  it('keeps rate slightly slower and pitch gently lifted', () => {
-    expect(SOFT_PRESCHOOL_RATE).toBeGreaterThanOrEqual(0.9);
-    expect(SOFT_PRESCHOOL_RATE).toBeLessThanOrEqual(0.95);
-    expect(SOFT_PRESCHOOL_PITCH).toBeCloseTo(1.05, 2);
+  it('keeps rate softer/slower and pitch gently lifted', () => {
+    expect(SOFT_PRESCHOOL_RATE).toBeGreaterThanOrEqual(0.85);
+    expect(SOFT_PRESCHOOL_RATE).toBeLessThanOrEqual(0.88);
+    expect(SOFT_PRESCHOOL_PITCH).toBeCloseTo(1.08, 2);
   });
 
-  it('includes common iPad / iOS warm female voice hints', () => {
-    for (const name of ['Samantha', 'Karen', 'Moira', 'Fiona', 'Tessa', 'Victoria']) {
+  it('includes expanded iPad / iOS warm female voice hints', () => {
+    for (const name of [
+      'Samantha',
+      'Karen',
+      'Moira',
+      'Fiona',
+      'Tessa',
+      'Victoria',
+      'Nora',
+      'Martha',
+      'Nicky',
+      'Melina',
+    ]) {
       expect(DEFAULT_SOFT_VOICE_HINTS).toContain(name);
     }
+  });
+
+  it('adds soft ellipsis pauses after sentence ends', () => {
+    const out = withSoftStoryPauses('Hello. Ready? Go!');
+    expect(out).toContain('…');
+    expect(out.startsWith('Hello')).toBe(true);
   });
 });
 

@@ -2,8 +2,9 @@
  * Lightweight preschool mind — warm teacher voice, short beats, topic branches.
  * Greeting offers talk OR two pictures; ~8 min arc ends with one first-principles
  * wonder (why/how/what if variants), never a quiz grade. Always exactly two pictures.
- * Topics span stories / nature / feelings / animals (plus dinos).
- * Allergy filter wraps food labels before anything leaves this module.
+ * Topics: dinos / forest folklore classics / feelings / animals / nature / ice (original).
+ * Folklore priority: Three Little Pigs, Little Red Riding Hood, gentle classics.
+ * No Disney IP names in spoken content. Allergy filter wraps food labels.
  */
 
 import {
@@ -18,8 +19,8 @@ import { isHangupPhrase } from './hangupPhrase';
 
 export { isHangupPhrase };
 
-/** Preschool topic branches — stories map to forest folklore. */
-export type Topic = 'dinos' | 'forest' | 'feelings' | 'animals' | 'nature';
+/** Preschool topic branches — forest = folklore story arcs. */
+export type Topic = 'dinos' | 'forest' | 'feelings' | 'animals' | 'nature' | 'ice';
 
 export type MindTurn = {
   speech: string;
@@ -49,9 +50,8 @@ type Beat = {
   firstPrinciples?: boolean;
 };
 
-/** Default greeting pictures: dinosaurs / forest-or-folklore. Talk unlocks animals, nature, feelings, stories. */
+/** Default greeting pictures: dinosaurs / forest-or-folklore. Talk unlocks more. */
 const GREETING: Beat = {
-  // Short for ~3yo attention: name + sit invite + two pictures + talk unlocks.
   speech:
     "Hi Naomi! I'm Luce — come sit with me. Want dinosaurs, or a forest story? Tap a picture, or say animals, nature, or feelings.",
   choices: [
@@ -103,43 +103,63 @@ const DINO_BEATS: Beat[] = [
   },
 ];
 
-/** Cozy folklore / stories (Italian La Befana + soft Irish light — never scary). */
+/**
+ * Folklore / classic preschool stories (primary story path).
+ * Gentle retells: Three Little Pigs, Little Red Riding Hood, plus soft classics.
+ * Always exactly two emoji pictures that illustrate the beat.
+ */
 const FOREST_BEATS: Beat[] = [
   {
     speech:
-      "Come with me into the cozy forest. Soft moss under our toes — shh, it's friendly here. Shall we follow a tiny sparkle light, or listen for gentle birds?",
+      "Story time — come close. Once upon a soft morning, three little pigs packed tiny tool belts. One hummed, one skipped, one checked the sky. Shall we follow the first pig to gather straw, or walk with the second pig toward the sticks?",
     choices: [
-      { id: 'light', emoji: '✨', label: 'sparkle' },
-      { id: 'birds', emoji: '🐦', label: 'birds' },
+      { id: 'straw', emoji: '🌾', label: 'straw' },
+      { id: 'sticks', emoji: '🪵', label: 'sticks' },
     ],
   },
   {
     speech:
-      "On a soft Italian night, kind La Befana flies with care — never scary. She peeks at cozy windows. Want to follow her to the village, or wave to the stars with me?",
+      "The first pig built a cozy straw house — swish, swish — then waved hello. The second pig stacked stick walls, careful and proud. A breezy wolf neighbor sniffed by… but we keep this gentle: he only huffed a tiny puff and sat down to think. Help stack more sticks, or peek in the straw window?",
     choices: [
-      { id: 'village', emoji: '🏘️', label: 'village' },
-      { id: 'stars', emoji: '⭐', label: 'stars' },
+      { id: 'stack', emoji: '🧱', label: 'stack' },
+      { id: 'window', emoji: '🪟', label: 'window' },
     ],
   },
   {
     speech:
-      "An Irish hillside holds green moss and a gentle creek — never spooky. The little light dances hello. Splash in the creek together, or rest on the soft moss?",
+      "The third little pig built a strong brick house — clap, clap, safe and warm. She invited her sisters in for tea and apple slices. The wolf learned soft manners and knocked politely. Knock on the brick door with me, or pour pretend tea for the pigs?",
     choices: [
-      { id: 'creek', emoji: '💧', label: 'creek' },
-      { id: 'moss', emoji: '🌿', label: 'moss' },
+      { id: 'knock', emoji: '🚪', label: 'knock' },
+      { id: 'tea', emoji: '🫖', label: 'tea' },
     ],
   },
   {
     speech:
-      "La Befana leaves a warm smile, and the Irish light blinks hello to you. We can gather soft flowers, or tell the trees a sweet good night.",
+      "Another story path: Little Red Riding Hood skips along a sunny trail in her soft red cape. She carries a basket of warm bread for Grandma — never scary, just kind. Hold the red cape with me, or peek in the picnic basket?",
     choices: [
-      { id: 'flowers', emoji: '🌸', label: 'flowers' },
-      { id: 'trees', emoji: '🌳', label: 'trees' },
+      { id: 'cape', emoji: '🧥', label: 'red cape' },
+      { id: 'basket', emoji: '🧺', label: 'basket' },
     ],
   },
   {
     speech:
-      "Story time hush — we made a tiny folklore nest of kindness. Hold a story hug with me, or blow a quiet wind kiss?",
+      "At Grandma's cottage, flowers nod by the door and soup smells cozy. Little Red knocks — tap tap — and Grandma opens with the biggest hug. A shy forest friend waits outside learning to wait his turn. Hug Grandma with me, or pick a flower for the table?",
+    choices: [
+      { id: 'grandma', emoji: '👵', label: 'grandma' },
+      { id: 'flower-gift', emoji: '🌷', label: 'flower' },
+    ],
+  },
+  {
+    speech:
+      "One more classic hush: Goldilocks finds three soft chairs and three warm bowls — she tries the smallest, just-right seat and says thank you. Or we can visit Jack's tall green beanstalk that only climbs to a friendly cloud picnic. Sit in the small chair, or climb the soft beanstalk?",
+    choices: [
+      { id: 'chair', emoji: '🪑', label: 'small chair' },
+      { id: 'beanstalk', emoji: '🌱', label: 'beanstalk' },
+    ],
+  },
+  {
+    speech:
+      "On a soft Italian night, kind La Befana flies with care — never scary — and an Irish hillside light blinks hello. We made a folklore nest of kindness. Hold a story hug with me, or blow a quiet wind kiss to the pigs and Little Red?",
     choices: [
       { id: 'hug', emoji: '🤗', label: 'story hug' },
       { id: 'wind', emoji: '🌬️', label: 'wind kiss' },
@@ -190,7 +210,6 @@ const FEELINGS_BEATS: Beat[] = [
   },
 ];
 
-/** Friendly everyday animals — soft, never scary, short 3yo labels. */
 const ANIMALS_BEATS: Beat[] = [
   {
     speech:
@@ -234,7 +253,6 @@ const ANIMALS_BEATS: Beat[] = [
   },
 ];
 
-/** Nature walk — sun, rain, river, rainbow; short labels, huge emoji. */
 const NATURE_BEATS: Beat[] = [
   {
     speech:
@@ -278,6 +296,53 @@ const NATURE_BEATS: Beat[] = [
   },
 ];
 
+/**
+ * Original ice / winter / snow-princess adventure — no Disney character names.
+ * Keywords like frozen/elsa/anna route here; spoken lines stay original.
+ */
+const ICE_BEATS: Beat[] = [
+  {
+    speech:
+      "Snow sparkles on our mittens — hush, it's soft and bright. A kind snow princess opens her ice-castle door and waves you in. Shall we step into the ice castle, or catch a falling snowflake on our tongue?",
+    choices: [
+      { id: 'ice-castle', emoji: '🏰', label: 'ice castle' },
+      { id: 'snowflake', emoji: '❄️', label: 'snowflake' },
+    ],
+  },
+  {
+    speech:
+      "Inside, snow-sister friends slide on a smooth ice hallway — giggle, careful feet. Warm cocoa waits on a frosty table. Slide with the snow sisters, or sip pretend cocoa with me?",
+    choices: [
+      { id: 'slide', emoji: '🛷', label: 'sled slide' },
+      { id: 'cocoa', emoji: '☕', label: 'cocoa' },
+    ],
+  },
+  {
+    speech:
+      "The snow princess braids a scarf of moonlight and shares mittens that match. Outside, the winter pond shines like a mirror — we skate only tiny careful circles. Wear the soft mittens, or skate a tiny circle?",
+    choices: [
+      { id: 'mittens', emoji: '🧤', label: 'mittens' },
+      { id: 'skate', emoji: '⛸️', label: 'skate' },
+    ],
+  },
+  {
+    speech:
+      "We build a round snow fort with a sparkle window, then hang a paper-star lantern. A gentle snow hare peeks in to say hello. Stack a snow block with me, or light the star lantern?",
+    choices: [
+      { id: 'snow-fort', emoji: '☃️', label: 'snow fort' },
+      { id: 'lantern', emoji: '⭐', label: 'lantern' },
+    ],
+  },
+  {
+    speech:
+      "Night hush in the ice castle: the snow princess hums a homemade lullaby — not from any movie — just for you. Blow a snow kiss to the moon, or wrap up in a warm winter hug?",
+    choices: [
+      { id: 'snow-kiss', emoji: '🌙', label: 'snow kiss' },
+      { id: 'winter-hug', emoji: '🤗', label: 'winter hug' },
+    ],
+  },
+];
+
 /** Two+ wonder angles per topic — one picked per sitting (never a quiz). */
 const FIRST_PRINCIPLES: Record<Topic, Beat[]> = {
   dinos: [
@@ -303,19 +368,19 @@ const FIRST_PRINCIPLES: Record<Topic, Beat[]> = {
   forest: [
     {
       speech:
-        "Wonder time — just curious. Why do you think La Befana and the Irish light both love cozy homes? What if kindness is what makes a home feel warm — how would you show it?",
+        "Wonder time — just curious. Why do you think the three little pigs were safer when they helped each other? What if kindness and strong bricks are both ways to care — how would you help a friend?",
       choices: [
-        { id: 'warmth', emoji: '🏠', label: 'warmth' },
-        { id: 'love', emoji: '💛', label: 'love' },
+        { id: 'help-friend', emoji: '🤝', label: 'help' },
+        { id: 'build-strong', emoji: '🧱', label: 'build strong' },
       ],
       firstPrinciples: true,
     },
     {
       speech:
-        "Come wonder with me. What if the soft moss and the little creek are friends because they share the hillside? Why might sharing space feel peaceful, and how can we be gentle guests in a forest?",
+        "Come wonder with me. What if Little Red and Grandma feel warm because they share hugs and wait turns? Why might knocking politely feel kinder than rushing, and how can we practice?",
       choices: [
-        { id: 'share-space', emoji: '🌿', label: 'share' },
-        { id: 'gentle-guest', emoji: '🕊️', label: 'gentle' },
+        { id: 'knock-kind', emoji: '🚪', label: 'knock kind' },
+        { id: 'share-hug-fp', emoji: '💛', label: 'share hug' },
       ],
       firstPrinciples: true,
     },
@@ -380,6 +445,26 @@ const FIRST_PRINCIPLES: Record<Topic, Beat[]> = {
       firstPrinciples: true,
     },
   ],
+  ice: [
+    {
+      speech:
+        "Wonder time in the soft snow — just curious. What if the ice castle feels warm because friends share mittens and cocoa? Why might sharing keep winter hearts cozy, and how would you share?",
+      choices: [
+        { id: 'share-warm', emoji: '🧤', label: 'share' },
+        { id: 'cozy-heart', emoji: '💛', label: 'cozy heart' },
+      ],
+      firstPrinciples: true,
+    },
+    {
+      speech:
+        "Come wonder with me. How does a snowflake know to land so gently? What if being careful on ice is a kind of kindness to our bodies — why might slow steps feel brave?",
+      choices: [
+        { id: 'gentle-step', emoji: '⛸️', label: 'gentle' },
+        { id: 'brave-slow', emoji: '❄️', label: 'slow brave' },
+      ],
+      firstPrinciples: true,
+    },
+  ],
 };
 
 const SNACK_BEAT: Beat = {
@@ -403,7 +488,7 @@ const WIND_DOWN: Beat = {
 
 const FAREWELL: Beat = {
   speech:
-    "Bye-bye, Naomi. I loved our story time so much. Go give Mommy or Daddy a big warm hug. See you soon!",
+    "Bye-bye for now, Naomi. I loved our story time. If you want more, just say wake up or come back — I'm right here. Or go give Mommy or Daddy a warm hug. See you soon!",
   choices: [
     { id: 'hug', emoji: '🤗', label: 'hug' },
     { id: 'wave', emoji: '👋', label: 'wave' },
@@ -413,14 +498,22 @@ const FAREWELL: Beat = {
 const DINO_NAME_RE =
   /\b(t-?rex|triceratops|stegosaurus|brachiosaurus|velociraptor)\b/i;
 
-/** Story beats before the single first-principles question (~5 min book-like). */
+/** Disney / franchise names — detect only; never speak these in beats. */
+const DISNEY_ICE_DETECT_RE =
+  /\b(frozen|elsa|anna|olaf|arendelle|let\s*it\s*go)\b/i;
+
+/** Story beats before first-principles for the default (dino-length) arc. */
 export const STORY_BEAT_COUNT = DINO_BEATS.length;
+
+/** Folklore forest arc length (pigs + red riding + classics). */
+export const FOREST_BEAT_COUNT = FOREST_BEATS.length;
 
 function topicBeats(topic: Topic): Beat[] {
   if (topic === 'dinos') return DINO_BEATS;
   if (topic === 'feelings') return FEELINGS_BEATS;
   if (topic === 'animals') return ANIMALS_BEATS;
   if (topic === 'nature') return NATURE_BEATS;
+  if (topic === 'ice') return ICE_BEATS;
   return FOREST_BEATS;
 }
 
@@ -436,6 +529,7 @@ export function collectAllPicturePairs(): [PictureChoice, PictureChoice][] {
     ...FEELINGS_BEATS,
     ...ANIMALS_BEATS,
     ...NATURE_BEATS,
+    ...ICE_BEATS,
     ...Object.values(FIRST_PRINCIPLES).flat(),
     SNACK_BEAT,
     WIND_DOWN,
@@ -451,6 +545,16 @@ export function firstPrinciplesSpeechCatalog(): string[] {
     .map((b) => b.speech);
 }
 
+/** All ice-topic speeches (assert no Disney character names). */
+export function iceSpeechCatalog(): string[] {
+  return [...ICE_BEATS, ...FIRST_PRINCIPLES.ice].map((b) => b.speech);
+}
+
+/** Folklore forest speeches (pigs / red riding / classics). */
+export function forestSpeechCatalog(): string[] {
+  return [...FOREST_BEATS, ...FIRST_PRINCIPLES.forest].map((b) => b.speech);
+}
+
 /** Deterministic pick so the same input yields the same wonder angle. */
 function pickFirstPrinciples(topic: Topic, input: MindInput): Beat {
   const variants = FIRST_PRINCIPLES[topic];
@@ -464,7 +568,8 @@ function pickFirstPrinciples(topic: Topic, input: MindInput): Beat {
 
 /**
  * Detect topic from picture id and/or spoken words.
- * Greeting pictures: dinos | forest; talk may also say animals/nature/stories/feelings.
+ * Ice keywords (incl. Frozen franchise words) route to original ice topic.
+ * Folklore keywords route to forest. No forklift/truck topic.
  */
 export function detectTopic(
   naomiSaid?: string,
@@ -494,6 +599,20 @@ export function detectTopic(
     return 'feelings';
   }
 
+  // Ice / winter / snow-princess (original). Detect franchise words; never speak them.
+  if (
+    id === 'ice' ||
+    id === 'ice-castle' ||
+    id === 'snowflake' ||
+    id === 'snow-fort' ||
+    DISNEY_ICE_DETECT_RE.test(blob) ||
+    /\bice\s*princess\b|\bsnow\s*queen\b|\bice\s*castle\b|\bsnow\b|\bwinter\b|\bmittens\b|\bsled\b/.test(
+      blob,
+    )
+  ) {
+    return 'ice';
+  }
+
   if (
     id === 'animals' ||
     id === 'bunny' ||
@@ -514,14 +633,22 @@ export function detectTopic(
     id === 'rainbow' ||
     /\bnature\b|\brainbow\b|\bsun\b|\brain\b|\briver\b|\bhill\b/.test(blob)
   ) {
-    // Avoid stealing forest "creek" / generic water — nature ids + explicit words only above
     return 'nature';
   }
 
+  // Folklore / classic stories → forest (primary story ask)
   if (
     id === 'forest' ||
     id === 'stories' ||
-    /\bforest|folklore|story|stories|befana|irish|celtic|fairy|moss|creek\b/.test(
+    id === 'straw' ||
+    id === 'sticks' ||
+    id === 'cape' ||
+    id === 'basket' ||
+    id === 'grandma' ||
+    /\bforest|folklore|story|stories|storytime|fairy\s*tale|befana|irish|celtic|fairy|moss|creek\b/.test(
+      blob,
+    ) ||
+    /\bpigs?\b|\bwolf\b|\bred\s*riding|\bgrandma\b|\bgoldilocks\b|\bbeanstalk\b|\bthree\s*little\b/.test(
       blob,
     )
   ) {
@@ -546,6 +673,8 @@ function celebrate(
     if (topic === 'feelings') return 'Thank you for sharing that with me. ';
     if (topic === 'animals') return 'What a sweet animal friend — I love it! ';
     if (topic === 'nature') return 'Nature is so lovely with you! ';
+    if (topic === 'ice') return 'Snow-sparkle yes — so cozy with you! ';
+    if (topic === 'forest') return 'What a wonderful story choice! ';
     return 'You picked that — wonderful choice! ';
   }
   if (said) {
@@ -556,7 +685,7 @@ function celebrate(
 
 /**
  * Produce the next preschool turn. Always exactly two picture choices.
- * Arc: greeting → topic story beats (~5) → ONE first-principles → snack teach → wind-down.
+ * Arc: greeting → topic story beats → ONE first-principles → snack teach → wind-down.
  */
 export function nextTurn(input: MindInput): MindTurn {
   const said = input.naomiSaid?.trim() ?? '';
